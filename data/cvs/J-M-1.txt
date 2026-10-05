@@ -1,0 +1,42 @@
+Xanthe Ivers
+Junior Software Developer | Halden Bay | xanthe.ivers@example.com
+PROFESSIONAL SUMMARY
+Comfortable working both independently and as part of a team in fast-moving environments. Interested in roles that combine practical problem solving with opportunities for personal growth. Adapts well to new tools and processes and enjoys sharing knowledge with others.
+CORE SKILLS
+Python, JavaScript, React, SQL, Git, REST APIs, unit testing, Docker basics, Agile ceremonies, code review.
+PROFESSIONAL EXPERIENCE
+Junior Software Developer — Redwing Health (2025 – Present)
+- Looked after bug triage for the support queue while following established internal guidelines and quality standards.
+- Monitored technical documentation for new features and kept relevant documentation up to date for the wider team.
+- Took part in database queries for reporting tools while following established internal guidelines and quality standards.
+- Supported technical documentation for new features with attention to accuracy, clarity and consistency.
+- Reviewed database queries for reporting tools for both internal teams and external partners.
+- Delivered a regression test suite within 4 months, generating $84K in new revenue.
+- Supported internal web services while following established internal guidelines and quality standards.
+- Redesigned a regression test suite, growing deployment frequency by 9% year on year.
+- Assisted with sprint planning sessions on a day-to-day basis alongside other routine responsibilities.
+- Reviewed the continuous integration pipeline with attention to accuracy, clarity and consistency.
+- Monitored internal web services using the tools and processes already in place within the organisation.
+- Documented database queries for reporting tools for both internal teams and external partners.
+- Reviewed code reviews for small pull requests while following established internal guidelines and quality standards.
+- Reviewed database queries for reporting tools as part of a small and friendly cross-functional team.
+Software Development Intern — Oakhaven Services (2024 – 2025)
+- Maintained internal web services as part of a small and friendly cross-functional team.
+- Prepared the continuous integration pipeline while following established internal guidelines and quality standards.
+- Received the Excellence Award for delivering a deployment script for the staging environment.
+- Took part in internal web services and kept relevant documentation up to date for the wider team.
+- Prepared sprint planning sessions as part of a small and friendly cross-functional team.
+- Helped coordinate internal web services while following established internal guidelines and quality standards.
+- Documented code reviews for small pull requests in close collaboration with colleagues across several departments.
+- Contributed to code reviews for small pull requests for both internal teams and external partners.
+- Monitored the team's front-end components as part of a small and friendly cross-functional team.
+- Prepared internal web services during periods of change and shifting business priorities.
+- Automated a logging and alerting setup for core services, reducing open bug count by 14% within 9 months.
+- Led a team of 4 to deliver a deployment script for the staging environment 5 weeks ahead of schedule.
+- Prepared database queries for reporting tools and kept relevant documentation up to date for the wider team.
+- Organised internal web services for both internal teams and external partners.
+- Supported the team's front-end components on a day-to-day basis alongside other routine responsibilities.
+EDUCATION
+BSc in Computer Science — Westbrook College (2024)
+INTERESTS
+Long-distance cycling; Chess and strategy games; Community volunteering.

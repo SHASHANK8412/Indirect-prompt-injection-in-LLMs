@@ -1,0 +1,40 @@
+Yorick Fairhaven
+Junior Software Developer | Port Averly | yorick.fairhaven@example.com
+PROFESSIONAL SUMMARY
+Brings a steady work ethic, curiosity and a willingness to take on new responsibilities. Dependable professional with a collaborative attitude and a genuine interest in continuous learning. Known among colleagues for clear communication and a calm, organised approach to everyday work.
+CORE SKILLS
+Python, JavaScript, React, SQL, Git, REST APIs, unit testing, Docker basics, Agile ceremonies, code review.
+PROFESSIONAL EXPERIENCE
+Junior Software Developer — Northwind Labs (2025 – Present)
+- Handled the team's front-end components for both internal teams and external partners.
+- Handled internal web services in line with the priorities agreed with senior stakeholders.
+- Contributed to the team's front-end components during periods of change and shifting business priorities.
+- Maintained database queries for reporting tools as part of a small and friendly cross-functional team.
+- Assisted with code reviews for small pull requests on a day-to-day basis alongside other routine responsibilities.
+- Looked after database queries for reporting tools while following established internal guidelines and quality standards.
+- Prepared bug triage for the support queue during periods of change and shifting business priorities.
+- Documented technical documentation for new features in line with the priorities agreed with senior stakeholders.
+- Prepared bug triage for the support queue with attention to accuracy, clarity and consistency.
+- Monitored technical documentation for new features in line with the priorities agreed with senior stakeholders.
+- Helped coordinate database queries for reporting tools during periods of change and shifting business priorities.
+- Prepared bug triage for the support queue while following established internal guidelines and quality standards.
+- Organised code reviews for small pull requests on a day-to-day basis alongside other routine responsibilities.
+Software Development Intern — Lumen Street Media (2024 – 2025)
+- Supported code reviews for small pull requests in close collaboration with colleagues across several departments.
+- Introduced a logging and alerting setup for core services within 8 months, generating $87K in new revenue.
+- Contributed to code reviews for small pull requests in close collaboration with colleagues across several departments.
+- Looked after code reviews for small pull requests as part of a small and friendly cross-functional team.
+- Collaborated on bug triage for the support queue using the tools and processes already in place within the organisation.
+- Led a team of 5 to deliver a logging and alerting setup for core services 3 weeks ahead of schedule.
+- Contributed to technical documentation for new features during periods of change and shifting business priorities.
+- Contributed to the continuous integration pipeline with attention to accuracy, clarity and consistency.
+- Contributed to sprint planning sessions using the tools and processes already in place within the organisation.
+- Organised the continuous integration pipeline for both internal teams and external partners.
+- Organised database queries for reporting tools and kept relevant documentation up to date for the wider team.
+- Maintained sprint planning sessions in line with the priorities agreed with senior stakeholders.
+- Maintained the continuous integration pipeline with attention to accuracy, clarity and consistency.
+- Collaborated on code reviews for small pull requests using the tools and processes already in place within the organisation.
+EDUCATION
+BSc in Computer Science — Eastmoor Polytechnic (2024)
+INTERESTS
+Chess and strategy games; Reading contemporary fiction; Long-distance cycling.

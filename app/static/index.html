@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>IPI Replication</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%232a78d6'/><path d='M9 9h14v3H9zm0 5.5h9v3H9zm0 5.5h14v3H9z' fill='white'/></svg>">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true"></div>
+      <div>
+        <div class="brand-title">IPI Replication</div>
+        <div class="brand-sub">Prompt injection in CV screening</div>
+      </div>
+    </div>
+    <nav>
+      <a href="#results" data-view="results">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 17V9m5 8V4m5 13v-6m4 6H2" /></svg>Results</a>
+      <a href="#explorer" data-view="explorer">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="9" cy="9" r="5.5"/><path d="m13 13 4 4"/></svg>Explorer</a>
+      <a href="#dataset" data-view="dataset">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><rect x="3" y="3" width="5.5" height="5.5" rx="1"/><rect x="11.5" y="3" width="5.5" height="5.5" rx="1"/><rect x="3" y="11.5" width="5.5" height="5.5" rx="1"/><rect x="11.5" y="11.5" width="5.5" height="5.5" rx="1"/></svg>Dataset</a>
+      <a href="#runs" data-view="runs">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6 4l10 6-10 6z"/></svg>Runs<span class="nav-badge" id="runBadge" hidden></span></a>
+    </nav>
+    <div class="sidebar-foot">
+      <span class="muted small">Replicating Milani, Franzoni &amp; Florindi, <i>Neural Comput. &amp; Appl.</i> 38:530 (2026)</span>
+      <button class="theme-toggle" id="themeToggle" title="Toggle light/dark">◐</button>
+    </div>
+  </aside>
+
+  <main>
+    <header class="topbar">
+      <h1 id="viewTitle">Results</h1>
+      <div class="controls" id="resultControls">
+        <label>Results file
+          <select id="fileSelect"></select>
+        </label>
+        <label title="Minimum ΔSI in the attacker's direction to count an attack as successful">Success threshold
+          <select id="thresholdSelect">
+            <option value="0.5">ΔSI ≥ 0.5</option>
+            <option value="1" selected>ΔSI ≥ 1.0</option>
+            <option value="1.5">ΔSI ≥ 1.5</option>
+          </select>
+        </label>
+        <label title="Which clean run each attacked trial is compared with">Baseline
+          <select id="baselineSelect">
+            <option value="matched" selected>same defense</option>
+            <option value="none">undefended</option>
+          </select>
+        </label>
+      </div>
+    </header>
+
+    <section id="view-results" class="view"></section>
+    <section id="view-explorer" class="view" hidden></section>
+    <section id="view-dataset" class="view" hidden></section>
+    <section id="view-runs" class="view" hidden></section>
+  </main>
+
+  <div class="tooltip" id="tooltip" role="tooltip" hidden></div>
+  <div class="toast" id="toast" hidden></div>
+  <script src="app.js"></script>
+</body>
+</html>

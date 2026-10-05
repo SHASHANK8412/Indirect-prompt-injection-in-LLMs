@@ -1,0 +1,28 @@
+id,name,seniority,ad_class,ad_score,word_count,n_achievements,role,role_key,txt_path,pdf_path
+J-H-1,Una Hollis,Junior,High,1.942,515,10,Jr Developer,jr_developer,J-H-1.txt,J-H-1.pdf
+J-H-2,Dalia Oakridge,Junior,High,1.984,504,10,Marketing Asst,marketing_asst,J-H-2.txt,J-H-2.pdf
+J-H-3,Alessa Stroud,Junior,High,1.946,514,10,Office Admin,office_admin,J-H-3.txt,J-H-3.pdf
+J-M-1,Xanthe Ivers,Junior,Medium,0.978,511,5,Jr Developer,jr_developer,J-M-1.txt,J-M-1.pdf
+J-M-2,Ilan Ashgrove,Junior,Medium,1.0,500,5,Marketing Asst,marketing_asst,J-M-2.txt,J-M-2.pdf
+J-M-3,Halia Arvelle,Junior,Medium,0.992,504,5,Office Admin,office_admin,J-M-3.txt,J-M-3.pdf
+J-L-1,Yorick Fairhaven,Junior,Low,0.39,513,2,Jr Developer,jr_developer,J-L-1.txt,J-L-1.pdf
+J-L-2,Emrik Whitlock,Junior,Low,0.392,510,2,Marketing Asst,marketing_asst,J-L-2.txt,J-L-2.pdf
+J-L-3,Cleo Northcott,Junior,Low,0.395,506,2,Office Admin,office_admin,J-L-3.txt,J-L-3.pdf
+M-H-1,Rasmus Kestrel,Mid,High,1.987,1208,24,Project Manager,project_manager,M-H-1.txt,M-H-1.pdf
+M-H-2,Corin Bellweather,Mid,High,1.992,1205,24,Sales Rep,sales_rep,M-H-2.txt,M-H-2.pdf
+M-H-3,Selin Elsworth,Mid,High,1.987,1208,24,HR Specialist,hr_specialist,M-H-3.txt,M-H-3.pdf
+M-M-1,Nerys Galloway,Mid,Medium,0.994,1207,12,Project Manager,project_manager,M-M-1.txt,M-M-1.pdf
+M-M-2,Bram Underhill,Mid,Medium,0.993,1208,12,Sales Rep,sales_rep,M-M-2.txt,M-M-2.pdf
+M-M-3,Bastian Dunmore,Mid,Medium,0.998,1202,12,HR Specialist,hr_specialist,M-M-3.txt,M-M-3.pdf
+M-L-1,Quilla Brightwater,Mid,Low,0.332,1204,4,Project Manager,project_manager,M-L-1.txt,M-L-1.pdf
+M-L-2,Veikko Ravensdale,Mid,Low,0.331,1209,4,Sales Rep,sales_rep,M-L-2.txt,M-L-2.pdf
+M-L-3,Dorian Dewhurst,Mid,Low,0.333,1200,4,HR Specialist,hr_specialist,M-L-3.txt,M-L-3.pdf
+S-H-1,Zelie Yarwood,Senior,High,1.993,2509,50,CTO,cto,S-H-1.txt,S-H-1.pdf
+S-H-2,Juno Lindqvist,Senior,High,1.997,2504,50,Consultant,consultant,S-H-2.txt,S-H-2.pdf
+S-H-3,Piet Jarrow,Senior,High,1.997,2504,50,Academic Professor,professor,S-H-3.txt,S-H-3.pdf
+S-M-1,Liora Coldridge,Senior,Medium,0.998,2504,25,CTO,cto,S-M-1.txt,S-M-1.pdf
+S-M-2,Matteo Zennor,Senior,Medium,1.0,2500,25,Consultant,consultant,S-M-2.txt,S-M-2.pdf
+S-M-3,Fenna Quintrell,Senior,Medium,0.998,2506,25,Academic Professor,professor,S-M-3.txt,S-M-3.pdf
+S-L-1,Gideon Penhallow,Senior,Low,0.32,2500,8,CTO,cto,S-L-1.txt,S-L-1.pdf
+S-L-2,Wren Thornbury,Senior,Low,0.319,2507,8,Consultant,consultant,S-L-2.txt,S-L-2.pdf
+S-L-3,Anouk Edevane,Senior,Low,0.319,2510,8,Academic Professor,professor,S-L-3.txt,S-L-3.pdf
