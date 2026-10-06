@@ -19,6 +19,42 @@ API keys are read from environment variables named in `config.yaml` (`OPENAI_API
 `GEMINI_API_KEY`, `DEEPSEEK_API_KEY`). Local models need [Ollama](https://ollama.com) running.
 Pull the models you list in `config.yaml`, for example `ollama pull llama3.1:8b`.
 
+## The OPE defense architecture (`ope/`)
+
+The paper's defense, the **Outer Prompt Extension** (Section 4.2), is implemented as its own package:
+
+```
+User task → 1 Isolation → 2 Meta-instruction → LLM → 3 Audit → Remediation (if needed) → Secure output
+```
+
+| Module | Role |
+|---|---|
+| `isolation.py` | Keeps the user's task (`INSTRUCTIONAL_CORE`) apart from the documents (`UNTRUSTED_CONTENT`), one block per document; a document cannot close its own boundary |
+| `meta_instruction.py` | Security frame at both outer edges of the prompt (primacy and recency), including the paper's extension text verbatim |
+| `prompt_composer.py` | Assembles security header, task, documents and security footer |
+| `audit.py` | Was injection detected? If so, does the draft follow it? (the model's own alert, a heuristic scan, a verifier call, and a lexical anchoring check) |
+| `remediation.py` | Discards a compromised draft, rebuilds the prompt with the detected statements quarantined, re-runs and re-audits |
+| `pipeline.py` | `OPEPipeline.analyze()`, with a baseline mode and a JSONL security log |
+| `evaluator.py` | Baseline vs `ope` vs `ope_full` over the attack fixtures: ASR, DAR, ΔSI, ME and pipeline outcomes |
+
+What maps to the paper and what is an engineering addition is set out in
+[`ope/ARCHITECTURE.md`](ope/ARCHITECTURE.md).
+
+- **Use it from Python:** `OPEPipeline(client).analyze(task, [Document(id, text)])`.
+- **Use it over HTTP:** `POST /api/ope/analyze`.
+- **Use it in the web UI:** the **OPE Analyze** page.
+- **Evaluate it:**
+
+  ```bash
+  .venv\Scripts\python -m ope.evaluator --model llama3 --cvs J-H-1 M-M-2
+  ```
+
+In experiments, the defense `ope` is the paper's prompt-only condition (u1.X / u2.X, one call).
+`ope_full` adds the external audit and remediation.
+
+> Runs made before this change used an earlier OPE wording under the name `ope`. Compare only
+> results produced with the same version.
+
 ## Web interface
 
 Double-click `start_ui.bat`, or run `.venv\Scripts\python app\server.py`, then open
@@ -26,6 +62,7 @@ Double-click `start_ui.bat`, or run `.venv\Scripts\python app\server.py`, then o
 
 | View | What it does |
 |---|---|
+| **OPE Analyze** | Run the OPE pipeline on your own task and documents (paste text, or upload PDF, DOCX or TXT, or pick dataset CVs). Shows the unprotected and protected answers side by side, a status of SAFE, INJECTION DETECTED, REMEDIATED or REMEDIATION FAILED, the steps the pipeline took, and an optional researcher view of the audit evidence. |
 | **Results** | KPIs, ASR by defense with 95% CIs, a defense scorecard (ASR, ME, DAR, alerted-yet-bypassed, false alarms), the paper's Tables 4–7 as heat tables, and model × attack. You can change the success threshold and the baseline live. |
 | **Explorer** | Every trial, filterable. Shows the CV the model received with the hidden injection highlighted, next to the model's response with every scored word coloured by its weight. Alert sentences and the per-candidate SI for multi-document runs are shown too. |
 | **Dataset** | The 3 × 3 grid of CVs. For any variant, shows the PDF as a recruiter sees it next to the extracted text the LLM reads. |
@@ -44,7 +81,7 @@ The UI calls the same `metrics.py`, `analysis.py` and `runner.py` code, so its n
 | 5. Score | `python metrics.py` (optional `--judge-model qwen --judge-alerts`) | `candidates.csv`, `trials.csv` |
 | 6. Analyse | `python analysis.py` or open `analysis.ipynb` | Tables 4–7, regression, figures, `defense_report.md` |
 
-Tests: `python -m pytest` (63 tests, about 10 s, no network needed).
+Tests: `python -m pytest` (82 tests, about 10 s, no network needed).
 
 To try everything without spending money, use `--models mock`. The mock simulator reacts to
 injections in a plausible way, but **its numbers are synthetic and must never be reported as results.**

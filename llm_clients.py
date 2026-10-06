@@ -193,11 +193,13 @@ class OllamaClient(LLMClient):
 # Mock simulator
 # ---------------------------------------------------------------------------
 _DOC_RE = re.compile(r"\[Attached document: ([^\]]+)\]\n(.*?)\n\[End of attached document\]"
-                     r"|<<DOC id=([^>]+)>>\n(.*?)\n<</DOC>>", re.S)
+                     r"|<<DOC id=([^>]+)>>\n(.*?)\n<</DOC>>"
+                     r'|<DOCUMENT id="([^"]+)"[^>]*>\n(.*?)\n</DOCUMENT>', re.S)
 
 
 def _find_docs(text: str) -> list[tuple[str, str]]:
-    return [(m.group(1) or m.group(3), m.group(2) or m.group(4)) for m in _DOC_RE.finditer(text)]
+    return [(m.group(1) or m.group(3) or m.group(5), m.group(2) or m.group(4) or m.group(6))
+            for m in _DOC_RE.finditer(text)]
 
 
 class MockClient(LLMClient):
@@ -223,6 +225,11 @@ class MockClient(LLMClient):
         text = prompt.replace("ˆ", " ")
         if "Extract only factual CV fields" in prompt:  # sanitizer pass 1
             return self._extract(text, flag_injection_sentences)
+        if "You are a security auditor" in prompt:      # OPE audit: verifier call
+            draft = prompt.split("<DRAFT>")[-1].split("</DRAFT>")[0].lower()
+            follows = any(w in draft for w in self.WORDS[5] + self.WORDS[2] + self.WORDS[1])
+            body = json.dumps({"follows_injection": follows, "reason": "mock verdict"})
+            return LLMResponse(body, input_tokens=len(prompt) // 4, output_tokens=len(body) // 4)
 
         docs = _find_docs(text)
         if not docs and '"name"' in text:  # sanitizer pass 2 (JSON profiles)

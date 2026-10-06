@@ -487,6 +487,74 @@ def stop_run(job_id: str):
     return job.status()
 
 
+# ---------------------------------------------------------------------------
+# OPE: the paper's defense architecture as a service
+# ---------------------------------------------------------------------------
+class OPEDoc(BaseModel):
+    id: str = Field(min_length=1, max_length=80)
+    name: str = ""
+    content: str = Field("", max_length=400_000)
+
+
+class OPEAnalyzeParams(BaseModel):
+    user_prompt: str = Field(min_length=1, max_length=8000)
+    documents: list[OPEDoc] = Field(min_length=1, max_length=30)
+    model: str = "mock"
+    mode: str = "ope"                  # ope | baseline | compare
+    temperature: float = Field(0.0, ge=0, le=2)
+    include_evidence: bool = False     # researcher view: audit signals, flagged statements
+
+
+class OPELoadParams(BaseModel):
+    filename: str = Field(min_length=1, max_length=200)
+    data_base64: str = Field(min_length=1, max_length=14_000_000)
+
+
+@app.post("/api/ope/load")
+def ope_load(p: OPELoadParams):
+    import base64
+    from ope.loaders import load_bytes
+    try:
+        data = base64.b64decode(p.data_base64, validate=True)
+        doc = load_bytes(Path(p.filename).stem, p.filename, data)
+    except ValueError as e:
+        raise HTTPException(400, str(e))
+    except Exception as e:  # corrupt PDF / DOCX
+        raise HTTPException(400, f"could not read {p.filename}: {e.__class__.__name__}")
+    return {"name": p.filename, "content": doc.content, "source": doc.source}
+
+
+@app.post("/api/ope/analyze")
+def ope_analyze(p: OPEAnalyzeParams):
+    from llm_clients import LLMError, load_clients
+    from ope import Document as ODoc, OPEPipeline
+    if p.model not in cfg()["models"]:
+        raise HTTPException(400, f"unknown model {p.model}")
+    if p.mode not in ("ope", "baseline", "compare"):
+        raise HTTPException(400, "mode must be ope, baseline or compare")
+    ids = [d.id for d in p.documents]
+    if len(set(ids)) != len(ids):
+        raise HTTPException(400, "document ids must be unique")
+    client = load_clients(str(ROOT / "config.yaml"), [p.model])[p.model]
+    docs = [ODoc(d.id, d.content, d.name or d.id) for d in p.documents]
+    pipe = OPEPipeline(client, log_path=RESULTS_DIR / "ope_security_log.jsonl")
+    out = {}
+    try:
+        for mode in (["baseline", "ope"] if p.mode == "compare" else [p.mode]):
+            r = pipe.analyze(p.user_prompt, docs, mode=mode, temperature=p.temperature)
+            res = r.public(include_evidence=p.include_evidence)
+            res.update(calls=r.calls, latency=round(r.latency, 1), tokens=r.input_tokens + r.output_tokens,
+                       sentiment=[{"id": d.id, "name": d.name, "si": round(si, 2), "terms": n}
+                                  for d, (si, n) in ((d, sentiment_index(seg)) for d in docs
+                                                     for cv, seg in split_by_candidate(
+                                                         r.response, {x.id: x.name for x in docs}).items()
+                                                     if cv == d.id)])
+            out[mode] = res
+    except LLMError as e:
+        raise HTTPException(502, str(e))
+    return clean(out)
+
+
 app.mount("/", StaticFiles(directory=STATIC, html=True), name="static")
 
 

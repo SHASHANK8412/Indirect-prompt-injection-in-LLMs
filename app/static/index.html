@@ -17,6 +17,8 @@
       </div>
     </div>
     <nav>
+      <a href="#analyze" data-view="analyze">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2.5 3.5 5v4.5c0 4 2.8 7 6.5 8 3.7-1 6.5-4 6.5-8V5z"/><path d="m7.3 10 1.9 1.9 3.6-3.8"/></svg>OPE Analyze</a>
       <a href="#results" data-view="results">
         <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 17V9m5 8V4m5 13v-6m4 6H2" /></svg>Results</a>
       <a href="#explorer" data-view="explorer">
@@ -55,6 +57,7 @@
       </div>
     </header>
 
+    <section id="view-analyze" class="view" hidden></section>
     <section id="view-results" class="view"></section>
     <section id="view-explorer" class="view" hidden></section>
     <section id="view-dataset" class="view" hidden></section>
@@ -64,5 +67,6 @@
   <div class="tooltip" id="tooltip" role="tooltip" hidden></div>
   <div class="toast" id="toast" hidden></div>
   <script src="app.js"></script>
+  <script src="ope.js"></script>
 </body>
 </html>

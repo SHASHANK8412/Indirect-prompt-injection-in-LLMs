@@ -45,6 +45,18 @@ models:
     num_ctx: 16384
     price_in: 0
     price_out: 0
+  qwen_coder:
+    provider: ollama
+    model: qwen2.5-coder:latest   # 7B, code-tuned variant of the same base
+    num_ctx: 16384
+    price_in: 0
+    price_out: 0
+  llama32:
+    provider: ollama
+    model: llama3.2:3b      # small and fast on CPU
+    num_ctx: 16384
+    price_in: 0
+    price_out: 0
 
   gpt:
     provider: openai

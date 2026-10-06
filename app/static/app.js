@@ -88,7 +88,7 @@ document.addEventListener("mousemove", (e) => {
 /* ====================================================================
    Routing & top bar
    ==================================================================== */
-const TITLES = { results: "Results", explorer: "Trial explorer", dataset: "Dataset", runs: "Runs" };
+const TITLES = { analyze: "OPE Analyze", results: "Results", explorer: "Trial explorer", dataset: "Dataset", runs: "Runs" };
 function route() {
   const v = (location.hash || "#results").slice(1).split("/")[0];
   S.view = TITLES[v] ? v : "results";
@@ -101,7 +101,7 @@ function route() {
 window.addEventListener("hashchange", route);
 
 function render() {
-  ({ results: renderResults, explorer: renderExplorer, dataset: renderDataset, runs: renderRuns })[S.view]();
+  ({ analyze: renderAnalyze, results: renderResults, explorer: renderExplorer, dataset: renderDataset, runs: renderRuns })[S.view]();
 }
 
 async function loadFiles(keep = true) {
@@ -433,7 +433,7 @@ async function renderDataset() {
   const sen = ["Junior", "Mid", "Senior"], ad = ["High", "Medium", "Low"];
   const words = { Junior: "~500 words", Mid: "~1,200 words", Senior: "~2,500 words" };
   el.innerHTML = `
-    <div class="grid" style="grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);align-items:start" id="dsGrid">
+    <div class="grid split split-ds" id="dsGrid">
       <div class="card card-pad">
         <h2>27 synthetic CVs</h2>
         <p class="sub">Seniority (a proxy for length) × achievement density (measurable achievements per 100 words). Every person and organisation is fictional.</p>
@@ -449,7 +449,6 @@ async function renderDataset() {
       </div>
       <div class="card" id="cvPanel">${S.selCv ? "" : emptyState("Pick a CV", "See the PDF as a recruiter would, next to the text an LLM actually reads.")}</div>
     </div>`;
-  if (innerWidth < 1100) $("#dsGrid").style.gridTemplateColumns = "1fr";
   $$(".cv-card", el).forEach((b) => (b.onclick = () => { S.selCv = b.dataset.cv; S.cvVariant = "plain"; renderDataset(); }));
   if (S.selCv) renderCvPanel();
 }
@@ -497,7 +496,7 @@ async function renderRuns() {
     `<label class="check ${disabled[v] ? "disabled" : ""}" ${disabled[v] ? `data-tip="${esc(disabled[v])}"` : ""}><input type="checkbox" name="${name}" value="${esc(v)}" ${F[name].includes(v) ? "checked" : ""}>${esc(labels[v] || v)}</label>`).join("")}</div>`;
   const notReady = Object.fromEntries(S.models.models.filter((m) => !m.ready).map((m) => [m.key, m.note]));
   el.innerHTML = `
-    <div class="grid" style="grid-template-columns:minmax(0,2fr) minmax(280px,1fr);align-items:start" id="runsGrid">
+    <div class="grid split split-runs" id="runsGrid">
       <div class="stack">
         <div class="card card-pad">
           <h2>New experiment</h2>
@@ -545,7 +544,6 @@ async function renderRuns() {
         </div>
       </div>
     </div>`;
-  if (innerWidth < 1100) $("#runsGrid").style.gridTemplateColumns = "1fr";
   bindRunForm(el);
   renderJobs();
 }
