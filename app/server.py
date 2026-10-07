@@ -94,7 +94,10 @@ def scored(name: str, threshold: float, baseline: str):
     with _lock:
         if key not in _score_cache:
             c = cfg()
-            cand, trials = score_file(p, c["experiment"]["cv_dir"], threshold, baseline)
+            try:
+                cand, trials = score_file(p, c["experiment"]["cv_dir"], threshold, baseline)
+            except (KeyError, json.JSONDecodeError) as e:
+                raise HTTPException(400, f"{name} is not an experiment results file ({e.__class__.__name__}: {e})")
             _score_cache.clear()
             _score_cache[key] = (cand, trials, load_results(p))
         return _score_cache[key]
@@ -107,10 +110,17 @@ def scored(name: str, threshold: float, baseline: str):
 def list_results():
     out = []
     for p in sorted(RESULTS_DIR.glob("*.jsonl"), key=lambda p: p.stat().st_mtime, reverse=True):
-        if p.name.endswith(".errors.jsonl") or p.name == "judge_cache.jsonl":
+        if p.name.endswith(".errors.jsonl"):
             continue
         with open(p, encoding="utf-8") as f:
-            n = sum(1 for line in f if line.strip())
+            lines = [line for line in f if line.strip()]
+        try:  # only experiment results (runner.py output); skip logs and caches
+            first = json.loads(lines[0]) if lines else {}
+        except json.JSONDecodeError:
+            continue
+        if lines and not {"key", "response", "candidates"} <= set(first):
+            continue
+        n = len(lines)
         out.append({"name": p.name, "records": n, "modified": p.stat().st_mtime,
                     "mock": p.name.startswith("mock")})
     return out
