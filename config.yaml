@@ -58,24 +58,54 @@ models:
     price_in: 0
     price_out: 0
 
-  gpt:
+  # ---- The paper's six models (tested July-August 2025, temperature 0) ----
+  # The paper used the web chat products. Here they are reached through each vendor's
+  # official API, so results describe the underlying models, not the products' web UIs.
+  # Model IDs change over time: check each vendor's model list if a call returns
+  # "model not found". Prices left empty (null) are unknown; the cost estimate shows n/a for them.
+  gpt:                      # paper: ChatGPT, GPT-4.0
     provider: openai
-    model: gpt-4o           # paper used ChatGPT-4; pick the model you want to test
+    model: gpt-4o           # ChatGPT's GPT-4-class model in mid-2025; use "gpt-4" for the original GPT-4
     api_key_env: OPENAI_API_KEY
     rpm: 60
-    price_in: 2.50
+    price_in: 2.50          # approximate
     price_out: 10.00
-  gemini:
+  gemini:                   # paper: Gemini 2.5 Flash
     provider: gemini
     model: gemini-2.5-flash
     api_key_env: GEMINI_API_KEY
     rpm: 30
-    price_in: 0.30
+    price_in: 0.30          # approximate
     price_out: 2.50
-  deepseek:
+  deepseek:                 # paper: DeepSeek V3
     provider: deepseek
-    model: deepseek-chat    # DeepSeek V3
+    model: deepseek-chat    # DeepSeek's V3-series chat model
     api_key_env: DEEPSEEK_API_KEY
     rpm: 60
-    price_in: 0.27
+    price_in: 0.27          # approximate
     price_out: 1.10
+  grok:                     # paper: Grok 3.0
+    provider: openai        # xAI's API is OpenAI-compatible
+    base_url: https://api.x.ai/v1
+    model: grok-3
+    api_key_env: XAI_API_KEY
+    send_seed: false
+    rpm: 30
+    price_in: null
+    price_out: null
+  perplexity:               # paper: Perplexity AI (standard, Aug 2025)
+    provider: openai        # Perplexity's API is OpenAI-compatible
+    base_url: https://api.perplexity.ai
+    model: sonar            # Perplexity's standard model; it may also search the web
+    api_key_env: PERPLEXITY_API_KEY
+    send_seed: false
+    rpm: 30
+    price_in: null
+    price_out: null
+  copilot:                  # paper: Microsoft Copilot (GPT-4). STAND-IN, NOT COPILOT ITSELF:
+    provider: openai        # Copilot has no public chat API, so this calls OpenAI's GPT-4,
+    model: gpt-4            # the model the paper reports Copilot ran on. Report it as a proxy.
+    api_key_env: OPENAI_API_KEY
+    rpm: 60
+    price_in: null
+    price_out: null

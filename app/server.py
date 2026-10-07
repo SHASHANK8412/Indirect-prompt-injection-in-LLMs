@@ -47,6 +47,15 @@ PY = sys.executable
 app = FastAPI(title="IPI replication")
 
 
+@app.middleware("http")
+async def no_stale_ui(request, call_next):
+    """Local tool: always revalidate the UI files so updates show up without a hard refresh."""
+    response = await call_next(request)
+    if not request.url.path.startswith("/files/"):
+        response.headers["Cache-Control"] = "no-cache"
+    return response
+
+
 # ---------------------------------------------------------------------------
 # helpers
 # ---------------------------------------------------------------------------
@@ -391,7 +400,8 @@ def _parse_plan(stdout: str) -> dict:
         if len(parts) == 8 and parts[3].isdigit():
             rows.append({"model": parts[0], "protocol": parts[1], "defense": parts[2], "trials": int(parts[3]),
                          "calls": int(parts[4]), "input_tokens": int(parts[5].replace(",", "")),
-                         "output_tokens": int(parts[6].replace(",", "")), "usd": float(parts[7])})
+                         "output_tokens": int(parts[6].replace(",", "")),
+                         "usd": None if parts[7] == "n/a" else float(parts[7])})
     tot = re.search(r"estimated total: \$([\d.]+)", stdout)
     return {"total": int(m.group(1)) if m else None, "done": int(m.group(2)) if m else None,
             "to_run": int(m.group(3)) if m else None, "rows": rows, "usd": float(tot.group(1)) if tot else None}

@@ -168,9 +168,10 @@ def estimate(plan: list[Trial], cfg: dict) -> list[dict]:
     rows = []
     for (model, proto, d), c in sorted(agg.items()):
         m = cfg["models"][model]
-        cost = c["in"] / 1e6 * (m.get("price_in") or 0) + c["out"] / 1e6 * (m.get("price_out") or 0)
+        known = m.get("price_in") is not None and m.get("price_out") is not None
+        cost = round(c["in"] / 1e6 * m["price_in"] + c["out"] / 1e6 * m["price_out"], 2) if known else None
         rows.append({"model": model, "protocol": proto, "defense": d, "trials": c["trials"], "calls": c["calls"],
-                     "input_tokens": int(c["in"]), "output_tokens": int(c["out"]), "usd": round(cost, 2)})
+                     "input_tokens": int(c["in"]), "output_tokens": int(c["out"]), "usd": cost})
     return rows
 
 
@@ -279,9 +280,13 @@ def main(argv=None):
     print(f"plan: {len(plan)} trials ({len(plan) - len(remaining)} already done, {len(remaining)} to run)")
     print(f"{'model':10} {'protocol':8} {'defense':10} {'trials':>7} {'calls':>7} {'in_tok':>11} {'out_tok':>10} {'usd':>8}")
     for r in est:
+        usd = "n/a" if r["usd"] is None else f"{r['usd']:.2f}"
         print(f"{r['model']:10} {r['protocol']:8} {r['defense']:10} {r['trials']:7} {r['calls']:7} "
-              f"{r['input_tokens']:11,} {r['output_tokens']:10,} {r['usd']:8.2f}")
-    print(f"estimated total: ${sum(r['usd'] for r in est):.2f} (approximate; see prices in config.yaml)")
+              f"{r['input_tokens']:11,} {r['output_tokens']:10,} {usd:>8}")
+    known = [r["usd"] for r in est if r["usd"] is not None]
+    unknown = sorted({r["model"] for r in est if r["usd"] is None})
+    print(f"estimated total: ${sum(known):.2f} (approximate; see prices in config.yaml)"
+          + (f"; price unknown for {', '.join(unknown)}" if unknown else ""))
     if a.dry_run:
         return
     if not remaining:

@@ -502,7 +502,7 @@ async function renderRuns() {
           <h2>New experiment</h2>
           <p class="sub">Runs <span class="mono">runner.py</span> in the background. Results go to <span class="mono">results/&lt;name&gt;.jsonl</span>. Reusing a name resumes that run and skips trials already done.</p>
           <div class="form-grid">
-            <div class="field wide">Models ${checks("models", S.models.models.map((m) => m.key), Object.fromEntries(S.models.models.map((m) => [m.key, `${m.key} · ${m.model}`])), notReady)}</div>
+            <div class="field wide"><div class="row">Models <span class="spacer"></span><button class="btn sm" type="button" id="paperModels" data-tip="ChatGPT (GPT-4), Gemini 2.5 Flash, DeepSeek V3, Grok 3, Perplexity, and a GPT-4 stand-in for Copilot">Select the paper's 6 models</button></div> ${checks("models", S.models.models.map((m) => m.key), Object.fromEntries(S.models.models.map((m) => [m.key, `${m.key} · ${m.model}`])), notReady)}</div>
             <div class="field">Protocol ${checks("protocol", ["single", "multi"], { single: "Single-doc (p.Pos, p.Neg)", multi: "Multi-doc (p.Pos-Neg, p.Pos-Med)" })}</div>
             <div class="field wide">Defenses ${checks("defenses", S.config.defenses, DEF_NAME)}</div>
             <label class="field">Trials per condition<input type="number" name="trials" min="1" max="100" value="${F.trials}"></label>
@@ -573,6 +573,13 @@ function bindRunForm(el) {
     } catch (e) { toast(e.message, true); }
   };
   $("#refreshModels").onclick = async () => { S.models = await api("/api/models"); renderRuns(); };
+  $("#paperModels").onclick = () => {
+    readForm(el);
+    RUN_FORM.models = ["gpt", "gemini", "deepseek", "grok", "perplexity", "copilot"].filter((k) => S.models.models.some((m) => m.key === k));
+    RUN_FORM.temperature = 0;
+    renderRuns();
+    toast("Paper's models selected (temperature 0). Models marked as not ready need an API key.");
+  };
   $$("[data-prep]", el).forEach((b) => (b.onclick = async () => {
     const step = b.dataset.prep;
     const body = step === "dataset" ? { step } : { step: "inject", placement: $("#prepPlacement").value, obfuscation: $("#prepObf").value, all_variants: step === "inject-all" };
