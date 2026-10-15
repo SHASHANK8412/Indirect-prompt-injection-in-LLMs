@@ -144,6 +144,21 @@ def load_done(path: Path) -> set[str]:
     return done
 
 
+def context_warnings(plan: list[Trial], cfg: dict) -> list[str]:
+    """Ollama silently truncates prompts longer than num_ctx; flag runs where that would happen."""
+    out = []
+    for model in sorted({t.model for t in plan}):
+        spec = cfg["models"][model]
+        if spec.get("provider") != "ollama":
+            continue
+        ctx = spec.get("num_ctx", 2048)
+        biggest = max((sum(len(d.text) for d in t.docs) / 4 + 800 for t in plan if t.model == model), default=0)
+        if biggest > ctx * 0.9:
+            out.append(f"{model}: largest prompt is ~{int(biggest):,} tokens but num_ctx is {ctx:,}; Ollama would "
+                       f"truncate it. Use --group-by cell (3 CVs per session), raise num_ctx, or use an API model.")
+    return out
+
+
 # ---------------------------------------------------------------------------
 # Cost estimation
 # ---------------------------------------------------------------------------
@@ -275,6 +290,8 @@ def main(argv=None):
     out = Path(pick("out", "results"))
     done = load_done(out)
     remaining = [t for t in plan if t.key not in done]
+    for w in context_warnings(remaining, cfg):
+        print(f"WARNING: {w}")
 
     est = estimate(remaining, cfg)
     print(f"plan: {len(plan)} trials ({len(plan) - len(remaining)} already done, {len(remaining)} to run)")

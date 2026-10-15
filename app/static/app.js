@@ -189,7 +189,17 @@ async function renderResults() {
         <div class="seg" id="heatSeg">${s.defenses.map((d) => `<button data-v="${d}" class="${d === (S.heatDefense || s.defenses[0]) ? "on" : ""}">${esc(DEF_NAME[d] || d)}</button>`).join("")}</div>
       </div>
       <div class="table-wrap">${modelAttackHeat(s)}</div>
-    </div>`;
+    </div>
+    ${s.paper ? `<div class="card card-pad" style="margin-top:16px">
+      <div class="row" style="margin-bottom:12px">
+        <div><h2>Replication vs paper</h2><p class="sub" style="margin:0">Your numbers next to Milani et al. (2026), Tables 4–7. "Defended" = the paper's u1.X/u2.X (<span class="mono">ope</span>). Paper values are percentages over 1,080 trials per model.</p></div>
+        <div class="spacer"></div>
+        <div class="seg" id="paperSeg">${[["table4_model", "Table 4 · model"], ["table5_seniority", "Table 5 · seniority"], ["table6_ad", "Table 6 · AD"], ["table7_attack", "Table 7 · attack"]]
+          .map(([k, l]) => `<button data-v="${k}" class="${k === (S.paperTab || "table4_model") ? "on" : ""}">${l}</button>`).join("")}</div>
+      </div>
+      <div class="table-wrap">${paperTable(s.paper[S.paperTab || "table4_model"] || [])}</div>
+    </div>` : ""}`;
+  $$("#paperSeg button").forEach((b) => (b.onclick = () => { S.paperTab = b.dataset.v; renderResults(); }));
   $$("#dimSeg button").forEach((b) => (b.onclick = () => { S.dim = b.dataset.v; renderResults(); }));
   $$("#metricSeg button").forEach((b) => (b.onclick = () => { S.metric = b.dataset.v; renderResults(); }));
   $$("#heatSeg button").forEach((b) => (b.onclick = () => { S.heatDefense = b.dataset.v; renderResults(); }));
@@ -235,6 +245,18 @@ function breakdown(s) {
         (d !== "none" ? `<br>ME ${pct(r.me, 1)} · DAR ${pct(r.dar, 1)}` : "") + `<br>mean ΔSI ${signed(r.delta_si)}`;
       const style = isPct ? heatBg(v) : heatBg(Math.abs(v ?? NaN), 2);
       return `<td class="cell" style="${style}" data-tip="${esc(tip)}">${isPct ? pct(v) : signed(v)}${isNum(lo) && isPct ? `<small>${pct(lo)}–${pct(hi)}</small>` : ""}</td>`;
+    }).join("")}</tr>`).join("")}
+  </tbody></table>`;
+}
+function paperTable(rows) {
+  if (!rows.length) return `<p class="muted">No matching data.</p>`;
+  const cols = Object.keys(rows[0]);
+  const fmt = (k, v) => (v == null ? "–" : typeof v === "number" ? (k === "n" ? v.toLocaleString() : k.includes("dSI") ? v.toFixed(2) : `${v.toFixed(1)}%`) : esc(v));
+  return `<table><thead><tr>${cols.map((c) => `<th class="${typeof rows[0][c] === "number" ? "num" : ""}">${esc(c)}</th>`).join("")}</tr></thead><tbody>
+    ${rows.map((r) => `<tr>${cols.map((c) => {
+      const paper = c.endsWith("(paper)");
+      const style = paper ? "color:var(--text-2)" : c.endsWith("(ours)") ? "font-weight:600" : "";
+      return `<td class="${typeof r[c] === "number" ? "num" : ""}" style="${style}">${fmt(c, r[c])}</td>`;
     }).join("")}</tr>`).join("")}
   </tbody></table>`;
 }

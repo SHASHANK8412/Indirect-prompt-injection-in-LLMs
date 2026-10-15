@@ -49,11 +49,16 @@ What maps to the paper and what is an engineering addition is set out in
   .venv\Scripts\python -m ope.evaluator --model llama3 --cvs J-H-1 M-M-2
   ```
 
-In experiments, the defense `ope` is the paper's prompt-only condition (u1.X / u2.X, one call).
-`ope_full` adds the external audit and remediation.
+In experiments:
+- `ope` is the paper's own defense condition, verbatim: u1.X / u2.X, the user prompt plus the
+  paper's one-sentence extension.
+- `ope_layered` is the three-layer prompt from `ope/`.
+- `ope_full` adds the external audit and remediation.
 
-> Runs made before this change used an earlier OPE wording under the name `ope`. Compare only
-> results produced with the same version.
+How the project lines up with the paper is set out in [`PAPER_ALIGNMENT.md`](PAPER_ALIGNMENT.md).
+
+> Results from before the paper alignment (stand-in attack texts, old CV IDs) were moved to
+> `results/archive_pre_paper_alignment/` and should not be mixed with new runs.
 
 ## Web interface
 
@@ -81,7 +86,7 @@ The UI calls the same `metrics.py`, `analysis.py` and `runner.py` code, so its n
 | 5. Score | `python metrics.py` (optional `--judge-model qwen --judge-alerts`) | `candidates.csv`, `trials.csv` |
 | 6. Analyse | `python analysis.py` or open `analysis.ipynb` | Tables 4–7, regression, figures, `defense_report.md` |
 
-Tests: `python -m pytest` (82 tests, about 10 s, no network needed).
+Tests: `python -m pytest` (88 tests, about 10 s, no network needed).
 
 To try everything without spending money, use `--models mock`. The mock simulator reacts to
 injections in a plausible way, but **its numbers are synthetic and must never be reported as results.**

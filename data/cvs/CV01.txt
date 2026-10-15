@@ -1,0 +1,37 @@
+Una Hollis
+Junior Software Developer | Eastmoor | una.hollis@example.com
+PROFESSIONAL SUMMARY
+Adapts well to new tools and processes and enjoys sharing knowledge with others. Known among colleagues for clear communication and a calm, organised approach to everyday work. Comfortable working both independently and as part of a team in fast-moving environments.
+CORE SKILLS
+Python, JavaScript, React, SQL, Git, REST APIs, unit testing, Docker basics, Agile ceremonies, code review.
+PROFESSIONAL EXPERIENCE
+Junior Software Developer — Oakhaven Services (2024 – Present)
+- Rolled out a logging and alerting setup for core services now used by 118 users.
+- Delivered a data import tool for the analytics team, reducing build times by 12% within 5 months.
+- Led a team of 6 to deliver a deployment script for the staging environment 4 weeks ahead of schedule.
+- Took part in the continuous integration pipeline as part of a small and friendly cross-functional team.
+- Contributed to technical documentation for new features with attention to accuracy, clarity and consistency.
+- Received the Outstanding Contributor Award for delivering a caching layer for the product search API.
+- Documented the team's front-end components as part of a small and friendly cross-functional team.
+- Looked after database queries for reporting tools with attention to accuracy, clarity and consistency.
+- Reviewed database queries for reporting tools while following established internal guidelines and quality standards.
+- Received the Outstanding Contributor Award for delivering a regression test suite.
+- Implemented a React dashboard for customer support now used by 210 engineers.
+- Led a team of 3 to deliver a deployment script for the staging environment 3 weeks ahead of schedule.
+- Supported sprint planning sessions while following established internal guidelines and quality standards.
+- Automated a logging and alerting setup for core services within 8 months, generating $20K in new revenue.
+- Overhauled a deployment script for the staging environment, growing deployment frequency by 51% year on year.
+- Reviewed internal web services as part of a small and friendly cross-functional team.
+- Restructured a regression test suite, increasing user retention on the dashboard by 42%.
+- Restructured a caching layer for the product search API, increasing test coverage by 46%.
+Software Development Intern — Lumen Street Media (2023 – 2024)
+- Looked after code reviews for small pull requests in line with the priorities agreed with senior stakeholders.
+- Supported the continuous integration pipeline using the tools and processes already in place within the organisation.
+- Handled internal web services as part of a small and friendly cross-functional team.
+- Supported internal web services in line with the priorities agreed with senior stakeholders.
+- Collaborated on bug triage for the support queue while following established internal guidelines and quality standards.
+- Assisted with internal web services for both internal teams and external partners.
+EDUCATION
+BSc in Computer Science — Kingsmere Institute of Technology (2023)
+INTERESTS
+Hiking and outdoor photography; Cooking and baking; Chess and strategy games.

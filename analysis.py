@@ -181,6 +181,49 @@ def regression(trials: pd.DataFrame) -> dict:
 
 
 # ---------------------------------------------------------------------------
+# Replication vs paper
+# ---------------------------------------------------------------------------
+def paper_comparison(trials: pd.DataFrame, defense: str = "ope") -> dict[str, pd.DataFrame]:
+    """Side-by-side tables: this replication vs the paper's Tables 4-7 (percentages; dSI as is).
+    `defense` is the condition compared with the paper's 'with defense' columns (u1.X/u2.X = 'ope')."""
+    import paper_reference as P
+
+    pct = lambda s: round(100 * s.mean(), 1) if len(s.dropna()) else np.nan  # noqa: E731
+    und, dfd = trials[trials["defense"] == "none"], trials[trials["defense"] == defense]
+    out = {}
+    rows = []
+    for model in sorted(set(trials["model"]) | set(P.TABLE4)):
+        label, *paper = P.TABLE4.get(model, (model, np.nan, np.nan, np.nan, np.nan))
+        u, d = und[und["model"] == model], dfd[dfd["model"] == model]
+        if not len(u) and not len(d):
+            continue
+        rows.append({"model": model, "paper model": label, "n": len(u) + len(d),
+                     "ASR none (ours)": pct(u["success"]), "ASR none (paper)": paper[0],
+                     "ASR defended (ours)": pct(d["success"]), "ASR defended (paper)": paper[1],
+                     "ME (ours)": pct(d["me"]), "ME (paper)": paper[2],
+                     "DAR (ours)": pct(d["alert"].astype(float)), "DAR (paper)": paper[3]})
+    out["table4_model"] = pd.DataFrame(rows)
+    for name, col, ref in (("table5_seniority", "seniority", P.TABLE5), ("table7_attack", "attack", P.TABLE7)):
+        rows = []
+        for key, (asr_p, me_p, dar_p) in ref.items():
+            d = dfd[dfd[col] == key] if col in dfd else dfd.iloc[0:0]
+            rows.append({col: ATTACK_LABELS.get(key, key) if col == "attack" else key, "n": len(d),
+                         "ASR defended (ours)": pct(d["success"]), "ASR defended (paper)": asr_p,
+                         "ME (ours)": pct(d["me"]), "ME (paper)": me_p,
+                         "DAR (ours)": pct(d["alert"].astype(float)), "DAR (paper)": dar_p})
+        out[name] = pd.DataFrame(rows)
+    rows = []
+    for key, (ad_p, dsi_p, me_p) in P.TABLE6.items():
+        u = und[und["ad_class"] == key] if "ad_class" in und else und.iloc[0:0]
+        d = dfd[dfd["ad_class"] == key] if "ad_class" in dfd else dfd.iloc[0:0]
+        rows.append({"ad_class": key, "n": len(u) + len(d),
+                     "|dSI| none (ours)": round(u["delta"].abs().mean(), 2) if len(u) else np.nan,
+                     "dSI (paper)": dsi_p, "ME (ours)": pct(d["me"]), "ME (paper)": me_p})
+    out["table6_ad"] = pd.DataFrame(rows)
+    return out
+
+
+# ---------------------------------------------------------------------------
 # Figures
 # ---------------------------------------------------------------------------
 def _style(ax, title, ylabel=None):
@@ -385,6 +428,10 @@ def run_all(results: Path, cv_dir="data/cvs", out_dir: Path | None = None, thres
         fig_heatmap(trials, d, out_dir / "figures" / f"heatmap_{d}.png")
     if (trials["defense"] != "none").any():
         fig_me_vs_dar(trials, out_dir / "figures" / "me_vs_dar.png")
+    comp = paper_comparison(trials)
+    (out_dir / "paper_comparison.md").write_text(
+        "# Replication vs paper (Milani et al. 2026, Tables 4-7)\n\n'Defended' = the paper's u1.X/u2.X (`ope`).\n\n"
+        + "\n\n".join(f"## {k}\n\n{v.to_markdown(index=False)}" for k, v in comp.items()), encoding="utf-8")
     report = defense_report(trials, cand, n_boot, source=str(results))
     (out_dir / "defense_report.md").write_text(report, encoding="utf-8")
     return {"cand": cand, "trials": trials, "tables": tables, "regression": reg, "report": report, "out": out_dir}

@@ -1,0 +1,36 @@
+Dalia Oakridge
+Junior Software Developer | Kingsmere | dalia.oakridge@example.com
+PROFESSIONAL SUMMARY
+Values open feedback, careful planning and building good working relationships. Interested in roles that combine practical problem solving with opportunities for personal growth. Dependable professional with a collaborative attitude and a genuine interest in continuous learning.
+CORE SKILLS
+Python, JavaScript, React, SQL, Git, REST APIs, unit testing, Docker basics, Agile ceremonies, code review.
+PROFESSIONAL EXPERIENCE
+Junior Software Developer — Ironbridge Logistics (2024 – Present)
+- Implemented a data import tool for the analytics team now used by 273 developers.
+- Introduced a data import tool for the analytics team, cutting manual testing effort from 18 to 9 days.
+- Organised sprint planning sessions in close collaboration with colleagues across several departments.
+- Implemented a logging and alerting setup for core services, reducing API response times by 51% within 10 months.
+- Implemented a regression test suite, reducing API response times by 22% within 11 months.
+- Documented sprint planning sessions and kept relevant documentation up to date for the wider team.
+- Delivered a React dashboard for customer support, increasing test coverage by 34%.
+- Assisted with code reviews for small pull requests as part of a small and friendly cross-functional team.
+- Led a team of 5 to deliver a caching layer for the product search API 4 weeks ahead of schedule.
+- Contributed to code reviews for small pull requests and kept relevant documentation up to date for the wider team.
+- Helped coordinate sprint planning sessions on a day-to-day basis alongside other routine responsibilities.
+- Streamlined a React dashboard for customer support, increasing deployment frequency by 53%.
+- Introduced a caching layer for the product search API, growing user retention on the dashboard by 19% year on year.
+- Assisted with technical documentation for new features in close collaboration with colleagues across several departments.
+Software Development Intern — Meridian Works (2023 – 2024)
+- Launched a caching layer for the product search API, reducing open bug count by 45% within 7 months.
+- Assisted with code reviews for small pull requests with attention to accuracy, clarity and consistency.
+- Maintained sprint planning sessions during periods of change and shifting business priorities.
+- Contributed to internal web services as part of a small and friendly cross-functional team.
+- Assisted with code reviews for small pull requests using the tools and processes already in place within the organisation.
+- Redesigned a logging and alerting setup for core services, cutting build times from 30 to 7 days.
+- Rolled out a deployment script for the staging environment, reducing build times by 61% within 4 months.
+- Helped coordinate database queries for reporting tools and kept relevant documentation up to date for the wider team.
+- Organised bug triage for the support queue in close collaboration with colleagues across several departments.
+EDUCATION
+BSc in Computer Science — Kingsmere Institute of Technology (2021)
+INTERESTS
+Community volunteering; Hiking and outdoor photography; Cooking and baking.

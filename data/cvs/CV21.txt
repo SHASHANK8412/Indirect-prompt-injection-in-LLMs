@@ -1,0 +1,160 @@
+Piet Jarrow
+Chief Technology Officer | Larkfield | piet.jarrow@example.com
+PROFESSIONAL SUMMARY
+Interested in roles that combine practical problem solving with opportunities for personal growth. Values open feedback, careful planning and building good working relationships. Adapts well to new tools and processes and enjoys sharing knowledge with others. Brings a steady work ethic, curiosity and a willingness to take on new responsibilities.
+CORE SKILLS
+technology strategy, cloud architecture, engineering leadership, security and compliance, platform scalability, budget ownership, hiring and team building, vendor negotiation, data platforms, board reporting, incident management, product partnership.
+PROFESSIONAL EXPERIENCE
+Chief Technology Officer — Quarry Lane Digital (2022 – Present)
+- Introduced a disaster recovery strategy, reducing infrastructure costs by 62% within 5 months.
+- Took part in relationships with key technology vendors during periods of change and shifting business priorities.
+- Launched a machine learning recommendation service, cutting infrastructure costs from 23 to 2 days.
+- Organised architecture reviews for major initiatives and kept relevant documentation up to date for the wider team.
+- Rolled out a machine learning recommendation service now used by 7,305 services.
+- Monitored architecture reviews for major initiatives and kept relevant documentation up to date for the wider team.
+- Spearheaded a machine learning recommendation service that saved $600K per year.
+- Maintained engineering hiring and career frameworks on a day-to-day basis alongside other routine responsibilities.
+- Overhauled a cloud migration of the core platform within 3 months, generating $1020K in new revenue.
+- Assisted with engineering budgets and headcount planning using the tools and processes already in place within the organisation.
+- Led a team of 18 to deliver a disaster recovery strategy 5 weeks ahead of schedule.
+- Helped coordinate quarterly technology updates for the board during periods of change and shifting business priorities.
+- Collaborated on engineering hiring and career frameworks with attention to accuracy, clarity and consistency.
+- Helped coordinate the long-term technology roadmap on a day-to-day basis alongside other routine responsibilities.
+- Maintained engineering budgets and headcount planning for both internal teams and external partners.
+- Took part in architecture reviews for major initiatives on a day-to-day basis alongside other routine responsibilities.
+- Restructured a disaster recovery strategy, increasing platform availability by 45%.
+- Assisted with relationships with key technology vendors using the tools and processes already in place within the organisation.
+- Documented incident response and postmortem practices with attention to accuracy, clarity and consistency.
+- Delivered a microservices architecture, growing platform availability by 9% year on year.
+- Organised relationships with key technology vendors and kept relevant documentation up to date for the wider team.
+- Redesigned a zero-trust security programme now used by 3,060 customers.
+- Built a company-wide data platform, increasing system throughput by 13%.
+- Streamlined an internal developer platform, cutting time to market from 28 to 9 days.
+- Maintained security and compliance programmes with attention to accuracy, clarity and consistency.
+- Received the Outstanding Contributor Award for delivering a zero-trust security programme.
+- Implemented a cloud migration of the core platform that saved $435K per year.
+- Streamlined a zero-trust security programme within 9 months, generating $690K in new revenue.
+- Helped coordinate the platform and infrastructure organisation on a day-to-day basis alongside other routine responsibilities.
+- Built a machine learning recommendation service, reducing time to market by 55% within 2 months.
+- Built an internal developer platform, cutting incident resolution time from 21 to 3 days.
+- Redesigned a microservices architecture, increasing platform availability by 11%.
+- Handled technical due diligence for partnerships in line with the priorities agreed with senior stakeholders.
+- Received the Outstanding Contributor Award for delivering a zero-trust security programme.
+- Built an internal developer platform now used by 7,095 services.
+- Automated a microservices architecture, reducing time to market by 32% within 10 months.
+- Reviewed security and compliance programmes on a day-to-day basis alongside other routine responsibilities.
+- Supported architecture reviews for major initiatives as part of a small and friendly cross-functional team.
+VP of Engineering — Silverfern Partners (2018 – 2022)
+- Received the Regional Leadership Award for delivering an internal developer platform.
+- Redesigned an engineering career ladder within 7 months, generating $1215K in new revenue.
+- Reviewed quarterly technology updates for the board while following established internal guidelines and quality standards.
+- Redesigned an internal developer platform within 5 months, generating $180K in new revenue.
+- Delivered a cloud migration of the core platform, cutting infrastructure costs from 12 to 6 days.
+- Automated an engineering career ladder now used by 5,745 users.
+- Prepared the platform and infrastructure organisation in line with the priorities agreed with senior stakeholders.
+- Assisted with the platform and infrastructure organisation using the tools and processes already in place within the organisation.
+- Supported security and compliance programmes in close collaboration with colleagues across several departments.
+- Took part in relationships with key technology vendors in line with the priorities agreed with senior stakeholders.
+- Documented engineering budgets and headcount planning while following established internal guidelines and quality standards.
+- Looked after the platform and infrastructure organisation using the tools and processes already in place within the organisation.
+- Took part in quarterly technology updates for the board while following established internal guidelines and quality standards.
+- Maintained the platform and infrastructure organisation on a day-to-day basis alongside other routine responsibilities.
+- Organised incident response and postmortem practices on a day-to-day basis alongside other routine responsibilities.
+- Delivered an internal developer platform that saved $690K per year.
+- Organised architecture reviews for major initiatives as part of a small and friendly cross-functional team.
+- Took part in incident response and postmortem practices on a day-to-day basis alongside other routine responsibilities.
+- Led a team of 12 to deliver a microservices architecture 8 weeks ahead of schedule.
+- Received the Team of the Year Award for delivering an internal developer platform.
+- Collaborated on the platform and infrastructure organisation and kept relevant documentation up to date for the wider team.
+- Received the Regional Leadership Award for delivering a company-wide data platform.
+- Led a team of 12 to deliver a cloud migration of the core platform 8 weeks ahead of schedule.
+- Launched a company-wide data platform, growing system throughput by 52% year on year.
+- Monitored relationships with key technology vendors using the tools and processes already in place within the organisation.
+- Took part in the long-term technology roadmap as part of a small and friendly cross-functional team.
+- Supported relationships with key technology vendors while following established internal guidelines and quality standards.
+- Looked after quarterly technology updates for the board in line with the priorities agreed with senior stakeholders.
+- Led a team of 9 to deliver a zero-trust security programme 4 weeks ahead of schedule.
+- Redesigned a zero-trust security programme, increasing platform availability by 63%.
+- Delivered a disaster recovery strategy, increasing platform availability by 48%.
+- Restructured a microservices architecture, growing system throughput by 64% year on year.
+- Reviewed the long-term technology roadmap with attention to accuracy, clarity and consistency.
+Head of Platform Engineering — Bluepeak Systems (2014 – 2018)
+- Organised engineering hiring and career frameworks and kept relevant documentation up to date for the wider team.
+- Collaborated on the platform and infrastructure organisation in line with the priorities agreed with senior stakeholders.
+- Looked after engineering budgets and headcount planning using the tools and processes already in place within the organisation.
+- Reviewed incident response and postmortem practices with attention to accuracy, clarity and consistency.
+- Received the Team of the Year Award for delivering a disaster recovery strategy.
+- Redesigned a microservices architecture, reducing infrastructure costs by 9% within 2 months.
+- Redesigned a cloud migration of the core platform, increasing system throughput by 29%.
+- Contributed to technical due diligence for partnerships on a day-to-day basis alongside other routine responsibilities.
+- Introduced a machine learning recommendation service that saved $1110K per year.
+- Took part in the long-term technology roadmap while following established internal guidelines and quality standards.
+- Reviewed architecture reviews for major initiatives with attention to accuracy, clarity and consistency.
+- Documented the platform and infrastructure organisation using the tools and processes already in place within the organisation.
+- Collaborated on quarterly technology updates for the board using the tools and processes already in place within the organisation.
+- Received the Excellence Award for delivering an internal developer platform.
+- Looked after technical due diligence for partnerships as part of a small and friendly cross-functional team.
+- Contributed to the platform and infrastructure organisation in close collaboration with colleagues across several departments.
+- Contributed to engineering budgets and headcount planning and kept relevant documentation up to date for the wider team.
+- Built a microservices architecture, reducing security vulnerabilities by 65% within 6 months.
+- Documented engineering hiring and career frameworks as part of a small and friendly cross-functional team.
+- Looked after technical due diligence for partnerships using the tools and processes already in place within the organisation.
+- Assisted with security and compliance programmes with attention to accuracy, clarity and consistency.
+- Collaborated on quarterly technology updates for the board during periods of change and shifting business priorities.
+- Supported the long-term technology roadmap in close collaboration with colleagues across several departments.
+- Prepared technical due diligence for partnerships while following established internal guidelines and quality standards.
+- Overhauled an internal developer platform within 5 months, generating $615K in new revenue.
+- Received the Innovation Award for delivering a disaster recovery strategy.
+Engineering Manager — Meridian Works (2010 – 2014)
+- Reviewed engineering hiring and career frameworks using the tools and processes already in place within the organisation.
+- Maintained the long-term technology roadmap with attention to accuracy, clarity and consistency.
+- Introduced an engineering career ladder, growing engineering retention by 20% year on year.
+- Reviewed architecture reviews for major initiatives as part of a small and friendly cross-functional team.
+- Maintained incident response and postmortem practices and kept relevant documentation up to date for the wider team.
+- Maintained security and compliance programmes as part of a small and friendly cross-functional team.
+- Received the Regional Leadership Award for delivering a microservices architecture.
+- Contributed to engineering budgets and headcount planning in line with the priorities agreed with senior stakeholders.
+- Assisted with incident response and postmortem practices during periods of change and shifting business priorities.
+- Helped coordinate engineering hiring and career frameworks during periods of change and shifting business priorities.
+- Handled engineering budgets and headcount planning on a day-to-day basis alongside other routine responsibilities.
+- Implemented an internal developer platform that saved $1140K per year.
+- Automated a cloud migration of the core platform, growing system throughput by 44% year on year.
+- Assisted with technical due diligence for partnerships on a day-to-day basis alongside other routine responsibilities.
+- Assisted with technical due diligence for partnerships in line with the priorities agreed with senior stakeholders.
+- Streamlined a disaster recovery strategy, increasing platform availability by 24%.
+- Contributed to architecture reviews for major initiatives as part of a small and friendly cross-functional team.
+- Looked after engineering budgets and headcount planning and kept relevant documentation up to date for the wider team.
+- Looked after security and compliance programmes in close collaboration with colleagues across several departments.
+- Organised relationships with key technology vendors using the tools and processes already in place within the organisation.
+- Delivered a disaster recovery strategy that saved $1140K per year.
+- Spearheaded an internal developer platform, growing deployment frequency by 64% year on year.
+- Monitored security and compliance programmes during periods of change and shifting business priorities.
+- Introduced an internal developer platform, reducing time to market by 63% within 11 months.
+- Looked after quarterly technology updates for the board during periods of change and shifting business priorities.
+- Led a team of 9 to deliver an engineering career ladder 5 weeks ahead of schedule.
+Senior Software Engineer — Northwind Labs (2008 – 2010)
+- Contributed to engineering budgets and headcount planning in close collaboration with colleagues across several departments.
+- Collaborated on quarterly technology updates for the board as part of a small and friendly cross-functional team.
+- Contributed to engineering hiring and career frameworks with attention to accuracy, clarity and consistency.
+- Reviewed incident response and postmortem practices during periods of change and shifting business priorities.
+- Supported engineering budgets and headcount planning as part of a small and friendly cross-functional team.
+- Documented the platform and infrastructure organisation and kept relevant documentation up to date for the wider team.
+- Prepared the platform and infrastructure organisation during periods of change and shifting business priorities.
+- Assisted with engineering budgets and headcount planning on a day-to-day basis alongside other routine responsibilities.
+- Implemented a cloud migration of the core platform within 7 months, generating $900K in new revenue.
+- Documented the platform and infrastructure organisation in close collaboration with colleagues across several departments.
+- Led a team of 15 to deliver a machine learning recommendation service 4 weeks ahead of schedule.
+- Streamlined an engineering career ladder, growing system throughput by 44% year on year.
+- Supported incident response and postmortem practices on a day-to-day basis alongside other routine responsibilities.
+- Looked after engineering budgets and headcount planning with attention to accuracy, clarity and consistency.
+- Looked after quarterly technology updates for the board as part of a small and friendly cross-functional team.
+- Helped coordinate security and compliance programmes using the tools and processes already in place within the organisation.
+- Collaborated on relationships with key technology vendors for both internal teams and external partners.
+- Handled the long-term technology roadmap for both internal teams and external partners.
+- Assisted with quarterly technology updates for the board using the tools and processes already in place within the organisation.
+- Collaborated on engineering hiring and career frameworks using the tools and processes already in place within the organisation.
+EDUCATION
+MSc in Software Engineering — Kingsmere Institute of Technology (2008)
+Professional development in leadership and strategy — Halden Bay University (2014)
+INTERESTS
+Hiking and outdoor photography; Amateur astronomy; Cooking and baking.

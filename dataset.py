@@ -28,9 +28,19 @@ from pdfrender import render_cv_pdf
 # Achievement density
 # ---------------------------------------------------------------------------
 AD_HIGH, AD_LOW = 1.5, 0.5
-AD_TARGETS = {"High": 2.0, "Medium": 1.0, "Low": 0.3}
-WORD_TARGETS = {"Junior": 500, "Mid": 1200, "Senior": 2500}
-WORD_BOUNDS = {"Junior": (430, 620), "Mid": (1050, 1400), "Senior": (2400, 3000)}
+# Table 6 of the paper: average AD per class (High 2.5, Medium 1.2, Low 0.4).
+AD_TARGETS = {"High": 2.5, "Medium": 1.2, "Low": 0.4}
+# Table 1 of the paper: one role per (seniority, AD) cell and its average word count.
+CELL_SPECS = {
+    ("Junior", "High"): ("jr_developer", 450),    ("Junior", "Medium"): ("marketing_asst", 550),
+    ("Junior", "Low"): ("office_admin", 600),     ("Mid", "High"): ("project_manager", 950),
+    ("Mid", "Medium"): ("sales_rep", 1100),       ("Mid", "Low"): ("hr_specialist", 1200),
+    ("Senior", "High"): ("cto", 2200),            ("Senior", "Medium"): ("consultant", 2500),
+    ("Senior", "Low"): ("professor", 3000),
+}
+WORD_TOLERANCE = 0.10        # each CV within +-10% of its cell's average word count
+# Section 5.1.1 ranges (Table 1's Mid-High average of 950 sits just below the stated 1,000).
+WORD_BOUNDS = {"Junior": (400, 660), "Mid": (850, 1500), "Senior": (1980, 3300)}
 N_JOBS = {"Junior": 2, "Mid": 3, "Senior": 5}
 
 _UNITS = (
@@ -65,6 +75,11 @@ ACHIEVEMENT_PATTERNS = {
 }
 
 
+# Sentence boundary: . ! ? followed by whitespace, but not after common abbreviations ("Mr. Smith").
+_SENT_END = re.compile(r"(?<!\bMr\.)(?<!\bMs\.)(?<!\bDr\.)(?<!\bSt\.)(?<!\bMrs\.)(?<!\be\.g\.)(?<!\bi\.e\.)"
+                       r"(?<=[.!?])\s+")
+
+
 def split_sentences(text: str) -> list[str]:
     out = []
     for line in text.splitlines():
@@ -73,7 +88,7 @@ def split_sentences(text: str) -> list[str]:
             line = line[2:]
         if not line:
             continue
-        out.extend(s.strip() for s in re.split(r"(?<=[.!?])\s+", line) if s.strip())
+        out.extend(s.strip() for s in _SENT_END.split(line) if s.strip())
     return out
 
 
@@ -176,10 +191,11 @@ def _duty_pool(spec: dict, rng: random.Random) -> list[str]:
     return pool
 
 
-def generate_cv_lines(role_key: str, ad_class: str, name: str, rng: random.Random, n_ach: int | None = None) -> list[str]:
+def generate_cv_lines(role_key: str, ad_class: str, name: str, rng: random.Random, n_ach: int | None = None,
+                      target_words: int | None = None) -> list[str]:
     spec = C.ROLE_SPECS[role_key]
     sen = spec["seniority"]
-    target_words = WORD_TARGETS[sen]
+    target_words = target_words or dict(CELL_SPECS.values())[role_key]
     if n_ach is None:
         n_ach = max(1, round(AD_TARGETS[ad_class] * target_words / 100))
 
@@ -243,18 +259,19 @@ def generate_dataset(out_dir: str | Path, seed: int = 42, make_pdf: bool = True,
     idx = 0
     for sen in ("Junior", "Mid", "Senior"):
         for ad in ("High", "Medium", "Low"):
-            for r_i, role_key in enumerate(C.SENIORITY_ROLES[sen], start=1):
-                cv_id = f"{sen[0]}-{ad[0]}-{r_i}"
-                name = names[idx]
+            role_key, target = CELL_SPECS[(sen, ad)]
+            for _ in range(3):                       # three CVs per cell, all with the cell's role (Table 1)
                 idx += 1
+                cv_id = f"CV{idx:02d}"
+                name = names[idx - 1]
                 n_ach = None
                 for attempt in range(max_tries):
-                    lines = generate_cv_lines(role_key, ad, name, random.Random(f"{seed}-{cv_id}-{attempt}"), n_ach)
+                    lines = generate_cv_lines(role_key, ad, name, random.Random(f"{seed}-{cv_id}-{attempt}"), n_ach,
+                                              target)
                     text = "\n".join(lines)
                     wc, n_found = word_count(text), count_achievements(text)
                     score = n_found / wc * 100
-                    lo, hi = WORD_BOUNDS[sen]
-                    if classify_ad(score) == ad and lo <= wc <= hi:
+                    if classify_ad(score) == ad and abs(wc - target) <= WORD_TOLERANCE * target:
                         break
                     # steer the achievement count towards the target band, then regenerate
                     n_ach = max(1, round(AD_TARGETS[ad] * wc / 100))

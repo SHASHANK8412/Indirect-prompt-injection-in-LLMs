@@ -173,6 +173,7 @@ def summary(file: str, threshold: float = 1.0, baseline: str = "matched"):
         "dims": dims,
         "heat": records(heat),
         "best": records(best.assign(defense=best["defense"].astype(str)))[0] if len(best) else None,
+        "paper": {k: records(v) for k, v in A.paper_comparison(trials).items()},
         "false_alarms": records(fa),
     })
 

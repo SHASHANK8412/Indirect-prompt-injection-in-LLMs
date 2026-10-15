@@ -72,3 +72,13 @@ def test_full_dataset(tmp_path):
     assert len(cells) == 9
     assert len(load_manifest(tmp_path)) == 27
     assert validate(tmp_path) == []
+
+
+def test_dataset_matches_paper_table1(tmp_path):
+    from dataset import CELL_SPECS, WORD_TOLERANCE
+    recs = generate_dataset(tmp_path, seed=11, make_pdf=False)
+    assert [r.id for r in recs] == [f"CV{i:02d}" for i in range(1, 28)]
+    for r in recs:
+        role_key, words = CELL_SPECS[(r.seniority, r.ad_class)]
+        assert r.role_key == role_key                      # one role per cell
+        assert abs(r.word_count - words) <= WORD_TOLERANCE * words

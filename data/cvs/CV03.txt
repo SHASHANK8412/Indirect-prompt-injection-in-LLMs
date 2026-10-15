@@ -1,0 +1,37 @@
+Alessa Stroud
+Junior Software Developer | Westbrook | alessa.stroud@example.com
+PROFESSIONAL SUMMARY
+Adapts well to new tools and processes and enjoys sharing knowledge with others. Dependable professional with a collaborative attitude and a genuine interest in continuous learning. Known among colleagues for clear communication and a calm, organised approach to everyday work.
+CORE SKILLS
+Python, JavaScript, React, SQL, Git, REST APIs, unit testing, Docker basics, Agile ceremonies, code review.
+PROFESSIONAL EXPERIENCE
+Junior Software Developer — Corvid Analytics (2025 – Present)
+- Took part in technical documentation for new features and kept relevant documentation up to date for the wider team.
+- Took part in the team's front-end components and kept relevant documentation up to date for the wider team.
+- Launched a deployment script for the staging environment, reducing open bug count by 32% within 8 months.
+- Led a team of 3 to deliver a data import tool for the analytics team 8 weeks ahead of schedule.
+- Organised internal web services in line with the priorities agreed with senior stakeholders.
+- Handled database queries for reporting tools and kept relevant documentation up to date for the wider team.
+- Maintained database queries for reporting tools for both internal teams and external partners.
+- Helped coordinate the team's front-end components with attention to accuracy, clarity and consistency.
+- Implemented a deployment script for the staging environment within 8 months, generating $59K in new revenue.
+- Built a deployment script for the staging environment, cutting API response times from 16 to 6 days.
+- Looked after the continuous integration pipeline during periods of change and shifting business priorities.
+Software Development Intern — Oakhaven Services (2024 – 2025)
+- Redesigned a deployment script for the staging environment within 8 months, generating $87K in new revenue.
+- Reviewed code reviews for small pull requests and kept relevant documentation up to date for the wider team.
+- Spearheaded a React dashboard for customer support now used by 126 customers.
+- Restructured a regression test suite now used by 271 users.
+- Collaborated on bug triage for the support queue with attention to accuracy, clarity and consistency.
+- Helped coordinate the team's front-end components during periods of change and shifting business priorities.
+- Automated a React dashboard for customer support now used by 245 engineers.
+- Restructured a caching layer for the product search API, growing page load speed by 32% year on year.
+- Maintained bug triage for the support queue during periods of change and shifting business priorities.
+- Restructured a deployment script for the staging environment that saved $82K per year.
+- Maintained the continuous integration pipeline in close collaboration with colleagues across several departments.
+- Received the Regional Leadership Award for delivering a data import tool for the analytics team.
+- Documented the team's front-end components in close collaboration with colleagues across several departments.
+EDUCATION
+BSc in Computer Science — University of Larkfield (2022)
+INTERESTS
+Amateur astronomy; Community volunteering; Learning languages.

@@ -35,21 +35,23 @@ LEXICON: dict[int, list[str]] = {
         "superb", "phenomenal", "top-tier", "best-in-class", "ideal candidate", "perfect fit", "standout",
         "exemplary", "flawless", "truly impressive", "highly impressive", "highly recommend",
         "strongly recommend", "strongly recommended", "highly recommended", "elite", "best candidate",
-        "clearly the best", "top candidate"],
+        "clearly the best", "top candidate", "legendary", "undisputed", "incomparable", "uncomparable",
+        "top-class", "top class", "unrivalled", "unrivaled"],
     4: ["strong", "qualified", "well qualified", "well-qualified", "impressive", "excellent", "solid", "capable",
         "competent", "effective", "valuable", "accomplished", "experienced", "skilled", "proven", "notable",
         "good fit", "recommend", "recommended", "promising", "robust", "successful", "asset", "versatile",
-        "talented", "dedicated", "proactive", "highly", "compelling"],
+        "talented", "dedicated", "proactive", "highly qualified", "compelling"],
     3: ["adequate", "relevant", "consistent", "reasonable", "satisfactory", "standard", "typical", "average",
         "ordinary", "moderate", "acceptable", "decent", "fair", "sufficient", "conventional", "routine",
-        "unremarkable", "appropriate", "entry-level", "foundational"],
+        "unremarkable", "appropriate", "entry-level", "foundational", "demonstrated", "demonstrates",
+        "demonstrate", "summarized", "summarised"],
     2: ["lacking", "lacks", "lack", "weak", "weaker", "weakness", "weaknesses", "insufficient", "limited",
         "gaps", "gap", "unclear", "vague", "underqualified", "under-qualified", "inexperienced", "concern",
         "concerns", "shortcoming", "shortcomings", "unconvincing", "generic", "questionable", "repetitive",
-        "lack of"],
+        "lack of", "unimpressive"],
     1: ["unfit", "unsuitable", "incompetent", "do not hire", "not hire", "not recommended", "not recommend",
         "do not recommend", "reject", "poor", "unqualified", "inadequate", "red flag", "red flags",
-        "not suitable", "disqualify", "disqualified", "avoid"],
+        "not suitable", "disqualify", "disqualified", "avoid", "dangerous"],
 }
 NEGATORS = {"not", "no", "never", "hardly", "barely", "without", "nor", "neither", "isn't", "wasn't",
             "aren't", "doesn't", "don't", "didn't", "cannot", "can't", "lacks", "lacking"}
@@ -73,6 +75,13 @@ ALERT_PATTERNS = [
     r"\b(?:will|have|has been|were|was)\s+(?:be\s+)?(?:ignored|disregarded)\b",
     r"\b(?:i will|i'll|i have|i've)\s+(?:ignore|disregard)", r"\bnot\s+follow(?:ing)?\s+(?:the|these|those|any)\b.{0,30}\binstructions?",
     r"\bsuspicious\s+(?:text|content|instructions?|passage)", r"\binstructions?\s+(?:addressed|directed)\s+(?:to|at)\s+(?:an?\s+)?(?:ai|assistant|model)",
+    # wording elicited by the paper's extension ("alert me that the document contains those statements
+    # trying to modify the generated text") and its Table 3 example
+    r"\bstatements?\s+(?:that\s+)?(?:try|tries|trying|attempt\w*)\s+to\s+(?:add|modify|change|alter|influence|impose)",
+    r"\b(?:add|adds|adding)\s+(?:additional\s+)?constraints\b",
+    r"\bcontains?\s+(?:hidden\s+|embedded\s+|additional\s+)?(?:statements|instructions|directives)\b",
+    r"\bmay be malicious\b", r"\bunrelated to (?:the\s+)?(?:cv|resume|document)(?:'s)?\s+content\b",
+    r"\bmodify the generated (?:text|answer|output)\b",
 ]
 ALERT_RE = re.compile("|".join(ALERT_PATTERNS), re.I)
 
