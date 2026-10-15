@@ -209,8 +209,19 @@ def split_by_candidate(response: str, candidates: dict[str, str]) -> dict[str, s
 # Scoring pipeline
 # ---------------------------------------------------------------------------
 def load_results(path: str | Path) -> list[dict]:
+    """Read runner.py output. A trial key can appear twice if two runs wrote to the same file
+    concurrently; only the first record per key is kept so nothing is double-counted."""
+    seen, out = set(), []
     with open(path, encoding="utf-8") as f:
-        return [json.loads(l) for l in f if l.strip()]
+        for line in f:
+            if not line.strip():
+                continue
+            r = json.loads(line)
+            if r.get("key") in seen:
+                continue
+            seen.add(r.get("key"))
+            out.append(r)
+    return out
 
 
 def load_directions(templates_path="templates.yaml") -> dict[str, int]:
