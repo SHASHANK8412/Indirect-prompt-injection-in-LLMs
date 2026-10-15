@@ -160,8 +160,26 @@ def sentiment_index(text: str) -> tuple[float, int]:
     return sum(w for _, w in terms) / len(terms), len(terms)
 
 
+# "No statements ... were detected", "I did not find any instructions ..." are confirmations that
+# nothing was found, not alerts.
+NEGATED_ALERT_RE = re.compile(
+    r"\b(no|none|neither|without)\b[^.!?]{0,60}\b(statements?|instructions?|attempts?|injection|constraints?)\b"
+    r"|\b(not|n't|never)\b[^.!?]{0,40}\b(detect\w*|find|found|contain\w*|identif\w*|present|notice\w*)\b"
+    r"|\b(were|was|are|is)\s+not\s+(detected|found|present|identified)\b"
+    r"|\bnothing\b[^.!?]{0,40}\b(suspicious|detected|found|unusual)\b", re.I)
+
+
+def alert_sentences(text: str) -> list[str]:
+    out = []
+    for line in (text or "").splitlines():
+        for s in re.split(r"(?<=[.!?])\s+", line):
+            if ALERT_RE.search(s) and not NEGATED_ALERT_RE.search(s):
+                out.append(s)
+    return out
+
+
 def has_alert(text: str) -> bool:
-    return bool(ALERT_RE.search(text or ""))
+    return bool(alert_sentences(text))
 
 
 # ---------------------------------------------------------------------------

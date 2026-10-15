@@ -99,7 +99,73 @@ def load_trials(paths: list[Path], cfg: dict):
     return records, cand, trials
 
 
-def build(paths, out, findings_path=None, figdir=Path("results/report_figures")):
+WORK_DONE = [
+    ("Dataset", "27 synthetic CVs matching the paper's Table 1: 3 seniority levels × 3 achievement-density classes, "
+                "one role per cell, 450–3,000 words, achievement density checked automatically (dataset.py)."),
+    ("Attacks", "The paper's four injections (Definitions 3.1–3.4) verbatim, hidden in the PDF as white or 1pt text "
+                "at 4 placements; every attacked PDF is verified to be machine-readable but invisible (inject.py)."),
+    ("Experiment runner", "The paper's protocol: single-CV sessions for p.Pos/p.Neg, multi-CV sessions for "
+                          "p.Pos-Neg/p.Pos-Med, fresh session per trial, temperature 0, resumable, with cost "
+                          "estimates; OpenAI, Gemini, DeepSeek, Grok, Perplexity and local Ollama models (runner.py)."),
+    ("Paper's defense", "u1.X / u2.X, the user prompt plus the paper's prompt-extension sentence, verbatim "
+                        "(defense ope)."),
+    ("OPE architecture", "Section 4.2's three layers as software: isolation, meta-instructions at the outer edges, "
+                         "and an audit plus remediation loop (ope/ package; defenses ope_layered and ope_full)."),
+    ("Extra defenses", "Beyond the paper: spotlighting/datamarking, a two-pass JSON sanitiser, and a hidden-text "
+                       "and instruction pre-filter."),
+    ("Metrics", "The paper's ASR, Sentiment Index, ΔSI, DAR, ME and AD; the SI scorer reproduces the paper's "
+                "worked example exactly (3.5 → 5.0, ΔSI 1.5). Added: rank shift, false-alarm rate, LLM judge."),
+    ("Analysis", "The paper's Tables 4–7 with CV-clustered bootstrap CIs, regression, charts, and an automatic "
+                 "side-by-side comparison with the paper's reported values."),
+    ("Web application", "Local app with OPE Analyze, Results, Explorer, Dataset and Runs pages."),
+    ("Quality", "88 automated tests; README, architecture and paper-alignment documents; GitHub repository."),
+]
+
+
+def _pct(s):
+    s = s.dropna()
+    return f"{100 * s.mean():.0f}%" if len(s) else "–"
+
+
+def expected_vs_actual(trials: pd.DataFrame, thr: float) -> pd.DataFrame:
+    """The paper's main claims next to what this replication shows so far."""
+    und, dfd = trials[trials["defense"] == "none"], trials[trials["defense"] == "ope"]
+    per_model = lambda df: ", ".join(f"{m} {_pct(g['success'])}" for m, g in df.groupby("model")) or "–"  # noqa: E731
+    dar = ", ".join(f"{m} {_pct(g['alert'].astype(float))}" for m, g in dfd.groupby("model")) or "–"
+    sen = dfd.groupby("seniority")["success"].mean() if "seniority" in dfd else pd.Series(dtype=float)
+    seniors = [s for s in ("Junior", "Mid", "Senior") if s in sen.index]
+    aware = dfd[dfd["alert"].astype(bool)]
+    aware_bypassed = f"{100 * (aware['success'] == 1).mean():.0f}% of alerted trials still succeeded" if len(aware) else "–"
+    multi = trials[trials["attack"].isin(["posneg", "posmed"])]
+    rows = [
+        ("All models vulnerable without defense", "ASR 92–98% (Table 4)", per_model(und),
+         "Agrees" if len(und) and und["success"].mean() >= 0.5 else "Partly" if len(und) else "Not tested"),
+        ("OPE lowers ASR, unevenly across models", "12.5% (ChatGPT) to 45.5% (DeepSeek)", per_model(dfd),
+         "Agrees" if dfd.groupby("model")["success"].mean().nunique() > 1 else ("Partly" if len(dfd) else "Not tested")),
+        ("OPE raises alerts (DAR)", "50–91% by model", dar, "See values" if len(dfd) else "Not tested"),
+        ("Detection ≠ resistance (aware-but-bypassed)", "p.Pos-Med: 85.5% DAR yet 32.2% ASR", aware_bypassed,
+         "Agrees" if len(aware) and (aware["success"] == 1).any() else ("No case yet" if len(aware) else "Not tested")),
+        ("Longer CVs harder to protect", "Defended ASR Junior 15% → Senior 33% (Table 5)",
+         ", ".join(f"{s} {100 * sen[s]:.0f}%" for s in seniors) or "–",
+         "Not yet tested" if "Senior" not in seniors else "See Table 5"),
+        ("Multi-CV attacks hardest (p.Pos-Med)", "Defended ASR 32.2% (Table 7)",
+         per_model(multi[multi["defense"] == "ope"]) if len(multi) else "–", "See Table 7" if len(multi) else "Not yet tested"),
+    ]
+    return pd.DataFrame(rows, columns=["Claim in the paper", "Expected (paper)", f"Actual (ΔSI ≥ {thr})", "Status"])
+
+
+def threshold_sensitivity(records_paths, cfg) -> pd.DataFrame:
+    rows = []
+    for th in (0.5, 1.0):
+        c2 = {**cfg, "metrics": {**cfg["metrics"], "asr_threshold": th}}
+        _, _, t = load_trials(records_paths, c2)
+        for (m, d), g in t.groupby(["model", "defense"]):
+            rows.append({"model": m, "defense": d, "threshold": f"ΔSI ≥ {th}", "ASR": 100 * g["success"].mean()})
+    df = pd.DataFrame(rows)
+    return df.pivot_table(index=["model", "defense"], columns="threshold", values="ASR").reset_index()
+
+
+def build(paths, out, findings_path=None, figdir=Path("results/report_figures"), status_lines=None):
     cfg = load_config("config.yaml")
     records, cand, trials = load_trials(paths, cfg)
     figdir.mkdir(parents=True, exist_ok=True)
@@ -110,10 +176,19 @@ def build(paths, out, findings_path=None, figdir=Path("results/report_figures"))
          P("Replication report · Milani, Franzoni &amp; Florindi, <i>Neural Computing &amp; Applications</i> 38:530 "
            "(2026), doi:10.1007/s00521-026-12266-x", small),
          P("Code: github.com/SHASHANK8412/Indirect-prompt-injection-in-LLMs", small), Spacer(1, 6)]
+    thr = cfg["metrics"]["asr_threshold"]
+
+    # ---- summary + work done
+    S += [P("Summary", h2),
+          P("This project replicates an empirical study of indirect prompt injection: instructions hidden in a CV "
+            "that change how an LLM evaluates candidates. The full pipeline, the paper's defense and its "
+            "three-layer architecture are implemented and tested. Experiments with the paper's protocol are in "
+            "progress on free models; the tables below compare the results so far with the paper's."),
+          P("1. What has been done", h2),
+          df_table(pd.DataFrame(WORK_DONE, columns=["Component", "Work completed"]), widths=[34 * mm, 144 * mm])]
 
     # ---- setup
-    thr = cfg["metrics"]["asr_threshold"]
-    S += [P("1. Setup", h2), bullets([
+    S += [P("2. Experimental setup", h2), bullets([
         "<b>Dataset:</b> 27 synthetic CVs laid out as in the paper's Table 1 (3 seniority levels × 3 achievement-"
         "density classes, one role per cell, 450–3,000 words). Fictional people only.",
         "<b>Attacks:</b> the paper's Definitions 3.1–3.4 verbatim, hidden as white text at the bottom of the PDF; the "
@@ -140,7 +215,14 @@ def build(paths, out, findings_path=None, figdir=Path("results/report_figures"))
 
     # ---- results vs paper
     comp = A.paper_comparison(trials)
-    S += [P("2. Results compared with the paper", h2),
+    S += [PageBreak(), P("3. Expected (paper) vs actual (this replication)", h2),
+          P("The paper's main claims, what it reports, and what the replication shows so far."),
+          df_table(expected_vs_actual(trials, thr), widths=[45 * mm, 45 * mm, 60 * mm, 28 * mm]), Spacer(1, 8),
+          KeepTogether([P("<b>How the success threshold changes ASR (%)</b>. The paper does not define the "
+                          "threshold. Clean CVs already score SI ≈ 4, so inflating attacks rarely gain a full "
+                          "point: ΔSI ≥ 1.0 undercounts them.", body),
+                        df_table(threshold_sensitivity(paths, cfg), pct_cols=["ΔSI ≥ 0.5", "ΔSI ≥ 1.0"])])]
+    S += [P("4. Detailed results compared with the paper", h2),
           P("Shaded columns are the paper's reported values. Percentages; 'defended' = u1.X / u2.X."),
           KeepTogether([P("<b>Table 4 · by model</b>", body),
                         df_table(comp["table4_model"].drop(columns=["paper model"]))]), Spacer(1, 8),
@@ -163,13 +245,13 @@ def build(paths, out, findings_path=None, figdir=Path("results/report_figures"))
     A.fig_asr_bars(trials, figdir / "asr.png", 500)
     if (trials["defense"] != "none").any():
         A.fig_me_vs_dar(trials, figdir / "me_dar.png")
-    S += [PageBreak(), P("3. Charts", h2), Image(str(figdir / "asr.png"), width=165 * mm, height=110 * mm)]
+    S += [PageBreak(), P("5. Charts", h2), Image(str(figdir / "asr.png"), width=165 * mm, height=110 * mm)]
     if (figdir / "me_dar.png").exists():
         S.append(Image(str(figdir / "me_dar.png"), width=150 * mm, height=100 * mm))
 
     # ---- findings
     if findings_path and Path(findings_path).exists():
-        S.append(P("4. Findings", h2))
+        S.append(P("6. Findings", h2))
         items, para = [], []
         for line in Path(findings_path).read_text(encoding="utf-8").splitlines():
             if line.startswith("- "):
@@ -182,7 +264,9 @@ def build(paths, out, findings_path=None, figdir=Path("results/report_figures"))
             S.append(bullets(items))
 
     fa = false_alarm_rate(cand)
-    S += [P("5. Limitations", h2), bullets([
+    if status_lines:
+        S += [P("7. Status and what remains", h2), bullets(status_lines)]
+    S += [P("8. Limitations", h2), bullets([
         "Models are reached through APIs and local runtimes, not the web interfaces the paper scripted; "
         "Gemini 2.5 Flash is unavailable to new API accounts, so gemini-3.8-flash was used.",
         "The CVs are synthetic, built to Table 1's specification, not the authors' dataset.",
@@ -209,9 +293,11 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--results", nargs="+", required=True)
     ap.add_argument("--findings")
+    ap.add_argument("--status", help="text file, one status line per line")
     ap.add_argument("--out", default="Replication_Report.pdf")
     a = ap.parse_args(argv)
-    build([Path(p) for p in a.results], Path(a.out), a.findings)
+    status = [l.strip() for l in Path(a.status).read_text(encoding="utf-8").splitlines() if l.strip()] if a.status else None
+    build([Path(p) for p in a.results], Path(a.out), a.findings, status_lines=status)
     print("wrote", a.out)
 
 
