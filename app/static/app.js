@@ -531,9 +531,10 @@ async function renderRuns() {
             <label class="field">Temperature<input type="number" name="temperature" min="0" max="2" step="0.1" value="${F.temperature}"></label>
             <label class="field">Placement<select name="placement">${S.config.placements.map((p) => `<option ${p === F.placement ? "selected" : ""}>${p}</option>`).join("")}</select></label>
             <label class="field">Obfuscation<select name="obfuscation">${S.config.obfuscations.map((p) => `<option value="${p}" ${p === F.obfuscation ? "selected" : ""}>${obfLabel(p)}</option>`).join("")}</select></label>
+            <div class="field wide small muted" id="variantNote"></div>
             <label class="field">Multi-doc session size<select name="group_by">${[["cell", "3 CVs (one grid cell)"], ["seniority", "9 CVs (one seniority)"], ["all", "all 27 CVs"]].map(([v, l]) => `<option value="${v}" ${v === F.group_by ? "selected" : ""}>${l}</option>`).join("")}</select></label>
             <label class="field">Parallel requests per model<input type="number" name="workers" min="1" max="16" value="${F.workers}"></label>
-            <label class="field wide">Only these CVs <span class="muted">(optional, space-separated, e.g. J-H-1 M-M-2 S-L-3)</span><input type="text" name="cvs" value="${esc(F.cvs)}" placeholder="all 27"></label>
+            <label class="field wide">Only these CVs <span class="muted">(optional, space-separated, e.g. CV01 CV13 CV25)</span><input type="text" name="cvs" value="${esc(F.cvs)}" placeholder="all 27"></label>
             <label class="field">Output name<input type="text" name="out" value="${esc(F.out)}" pattern="[A-Za-z0-9_\\-]+"></label>
           </div>
           <div class="row" style="margin-top:16px">
@@ -577,8 +578,18 @@ function readForm(el) {
   for (const k of ["placement", "obfuscation", "group_by", "cvs", "out"]) F[k] = $(`[name=${k}]`, el).value.trim();
   return { ...F, cvs: F.cvs ? F.cvs.split(/[\s,]+/).filter(Boolean) : [] };
 }
+function updateVariantNote(el) {
+  const v = `${$("[name=placement]", el).value}_${$("[name=obfuscation]", el).value}`;
+  const built = S.config.built_variants || [];
+  $("#variantNote").innerHTML = built.includes(v)
+    ? `<span class="chip good">built</span> The attacked CVs for this placement and obfuscation are ready.`
+    : `<span class="chip warn">not built yet</span> Start run will build this variant first (about 1–2 minutes). Built: ${built.map(esc).join(", ") || "none"}.`;
+}
 function bindRunForm(el) {
   const note = $("#formNote");
+  updateVariantNote(el);
+  $("[name=placement]", el).addEventListener("change", () => updateVariantNote(el));
+  $("[name=obfuscation]", el).addEventListener("change", () => updateVariantNote(el));
   $("#estBtn").onclick = async () => {
     const p = readForm(el);
     $("#planBox").innerHTML = `<div class="loading"><span class="spin"></span> Planning…</div>`;
@@ -615,6 +626,7 @@ function renderPlan() {
   const hours = (n) => (n * 60) / 3600;
   $("#planBox").innerHTML = `
     <div style="margin-top:16px">
+      ${p.note ? `<div class="banner info" style="margin-bottom:10px"><div>${esc(p.note)}</div></div>` : ""}
       <div class="row"><b>${(p.total ?? 0).toLocaleString()} trials</b><span class="muted">${(p.done ?? 0).toLocaleString()} already done · ${(p.to_run ?? 0).toLocaleString()} to run</span>
         <span class="spacer"></span><span class="chip ${p.usd > 0 ? "warn" : "good"}">≈ $${num(p.usd, 2)}</span></div>
       <div class="table-wrap" style="margin-top:8px"><table><thead><tr><th>Model</th><th>Protocol</th><th>Defense</th><th class="num">Trials</th><th class="num">Calls</th><th class="num">Input tok</th><th class="num">Output tok</th><th class="num">USD</th></tr></thead><tbody>
@@ -655,8 +667,12 @@ async function pollRuns(now = false) {
   $("#runBadge").hidden = !running;
   if (S.view === "runs") renderJobs();
   if (_wasRunning && !running) {               // a job just ended: refresh what may have changed
-    S.dataset = null; await loadFiles(); invalidate();
-    if (S.view !== "runs") render(); else { S.dataset = await api("/api/dataset"); }
+    S.dataset = null; S.config = null; await loadFiles(); invalidate();
+    if (S.view !== "runs") render();
+    else {
+      [S.dataset, S.config] = await Promise.all([api("/api/dataset"), api("/api/config")]);
+      if ($("#variantNote")) updateVariantNote($("#view-runs"));
+    }
   }
   _wasRunning = running;
   _pollTimer = setTimeout(pollRuns, running ? 2000 : 8000);

@@ -113,10 +113,20 @@ def build_variants(cv_dir="data/cvs", out_dir="data/attacked", templates_path="t
                     (sub / f"{stem}.extracted.txt").write_text(extracted, encoding="utf-8")
                     rows.append(row)
 
-    with open(out_dir / "injections.csv", "w", newline="", encoding="utf-8") as f:
+    # Merge with variants built earlier: rebuilding one placement/obfuscation must not drop the others.
+    built_now = {f"{p}_{o}" for p in placements for o in obfuscations}
+    keep = []
+    csv_path = out_dir / "injections.csv"
+    if csv_path.exists():
+        with open(csv_path, encoding="utf-8") as f:
+            for old in csv.DictReader(f):
+                variant = f"{old['placement']}_{old['obfuscation']}" if old["placement"] else ""
+                if variant and variant not in built_now and (out_dir / old["pdf_path"]).exists():
+                    keep.append({k: old.get(k, "") for k in FIELDS})
+    with open(csv_path, "w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=FIELDS)
         w.writeheader()
-        w.writerows(rows)
+        w.writerows(rows + keep)
     return rows
 
 

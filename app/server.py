@@ -139,7 +139,7 @@ def list_results():
 def get_config():
     c = cfg()
     return {"metrics": c["metrics"], "experiment": c["experiment"], "defenses": list(DEFENSES),
-            "placements": PLACEMENTS, "obfuscations": OBFUSCATIONS}
+            "placements": PLACEMENTS, "obfuscations": OBFUSCATIONS, "built_variants": built_variants()}
 
 
 @app.get("/api/summary")
@@ -213,13 +213,19 @@ def _injection_span(doc_text: str, injection: str) -> dict | None:
 
 
 @lru_cache(maxsize=8)
-def _injection_rows(attacked_dir: str) -> dict:
-    p = Path(attacked_dir) / "injections.csv"
-    if not p.exists():
-        return {}
-    with open(p, encoding="utf-8") as f:
+def _load_injection_rows(attacked_dir: str, mtime: float) -> dict:
+    with open(Path(attacked_dir) / "injections.csv", encoding="utf-8") as f:
         return {(r["cv_id"], r["attack"], f"{r['placement']}_{r['obfuscation']}" if r["placement"] else ""): r
                 for r in csv.DictReader(f)}
+
+
+def _injection_rows(attacked_dir: str) -> dict:
+    """injections.csv as a dict, re-read whenever the file changes (e.g. inject.py run from a terminal)."""
+    p = Path(attacked_dir) / "injections.csv"
+    return _load_injection_rows(attacked_dir, p.stat().st_mtime) if p.exists() else {}
+
+
+_injection_rows.cache_clear = _load_injection_rows.cache_clear  # existing callers keep working
 
 
 @app.get("/api/trial")
@@ -410,53 +416,108 @@ def _parse_plan(stdout: str) -> dict:
 
 @app.post("/api/dry-run")
 def dry_run(p: ExperimentParams):
+    note = None
+    if not variant_built(p.placement, p.obfuscation):
+        built = built_variants()
+        if not built:
+            raise HTTPException(400, "No attacked CVs have been built yet. Use 'Build attacked variants' first.")
+        # the variant changes only how the injection is hidden, not the trial count or prompt size much
+        placement, obfuscation = built[0].split("_", 1)
+        note = (f"The {p.placement} / {p.obfuscation} variant isn't built yet; this estimate uses {built[0]}. "
+                f"Start run builds it automatically first (about 1-2 minutes).")
+        p = p.model_copy(update={"placement": placement, "obfuscation": obfuscation})
     args = experiment_args(p) + ["--dry-run"]
     r = subprocess.run([PY, *args], cwd=ROOT, capture_output=True, text=True, timeout=300)
     if r.returncode != 0:
         raise HTTPException(400, (r.stderr or r.stdout)[-1500:])
-    return _parse_plan(r.stdout)
+    return {**_parse_plan(r.stdout), "note": note}
 
 
 class Job:
-    def __init__(self, kind: str, label: str, args: list[str], out: str | None = None):
+    """One or more subprocess steps run one after another (e.g. build a missing variant, then run).
+    Output of every step goes to one log file; a failing step stops the remaining ones."""
+
+    def __init__(self, kind: str, label: str, args: list[str], out: str | None = None,
+                 pre_steps: list[tuple[str, list[str]]] | None = None):
         self.id = uuid.uuid4().hex[:8]
         self.kind, self.label, self.args, self.out = kind, label, args, out
+        self.steps = list(pre_steps or []) + [(kind, args)]
         LOG_DIR.mkdir(parents=True, exist_ok=True)
         self.log_path = LOG_DIR / f"{time.strftime('%Y%m%d-%H%M%S')}_{kind}_{self.id}.log"
         self.started = time.time()
         self.ended: float | None = None
-        env = {**os.environ, "PYTHONUNBUFFERED": "1", "PYTHONIOENCODING": "utf-8"}
-        self._log = open(self.log_path, "w", encoding="utf-8")
-        self.proc = subprocess.Popen([PY, *args], cwd=ROOT, stdout=self._log, stderr=subprocess.STDOUT, env=env,
-                                     creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+        self.exit_code: int | None = None
         self.stopped = False
+        self.proc: subprocess.Popen | None = None
+        self.step_name = self.steps[0][0]
+        self._thread = threading.Thread(target=self._run, daemon=True)
+        self._thread.start()
+
+    def _run(self):
+        env = {**os.environ, "PYTHONUNBUFFERED": "1", "PYTHONIOENCODING": "utf-8"}
+        with open(self.log_path, "w", encoding="utf-8") as log:
+            for name, args in self.steps:
+                if self.stopped:
+                    break
+                self.step_name = name
+                if len(self.steps) > 1:
+                    log.write(f"=== step: {name} (python {' '.join(args)})\n")
+                    log.flush()
+                self.proc = subprocess.Popen([PY, *args], cwd=ROOT, stdout=log, stderr=subprocess.STDOUT, env=env,
+                                             creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+                code = self.proc.wait()
+                if code != 0:
+                    self.exit_code = code
+                    break
+            else:
+                self.exit_code = 0
+        if self.exit_code is None:
+            self.exit_code = 1 if self.stopped else 0
+        self.ended = time.time()
+        if self.kind == "experiment" or any(n == "inject" for n, _ in self.steps):
+            _injection_rows.cache_clear()
+
+    def running(self) -> bool:
+        return self.ended is None
 
     def status(self) -> dict:
-        code = self.proc.poll()
-        if code is not None and self.ended is None:
-            self.ended = time.time()
-            self._log.close()
         log = self.log_path.read_text(encoding="utf-8", errors="replace") if self.log_path.exists() else ""
         plan = _parse_plan(log)
         prog = re.findall(r"^\s+(\d+)/(\d+)\s+errors=(\d+)\s+eta=([\d.]+) min", log, re.M)
         done, total, errors, eta = (int(prog[-1][0]), int(prog[-1][1]), int(prog[-1][2]), float(prog[-1][3])) \
             if prog else (0, plan.get("to_run") or 0, 0, None)
-        state = "running" if code is None else "stopped" if self.stopped else "finished" if code == 0 else "failed"
-        return {"id": self.id, "kind": self.kind, "label": self.label, "state": state, "exit_code": code,
+        state = ("running" if self.running() else "stopped" if self.stopped
+                 else "finished" if self.exit_code == 0 else "failed")
+        label = self.label + (f" · building variant first" if self.running() and self.step_name == "inject"
+                              and self.kind == "experiment" else "")
+        return {"id": self.id, "kind": self.kind, "label": label, "state": state, "exit_code": self.exit_code,
                 "started": self.started, "ended": self.ended, "done": done, "total": total, "errors": errors,
-                "eta_min": eta, "out": self.out, "log_tail": log[-4000:], "command": "python " + " ".join(self.args)}
+                "eta_min": eta, "out": self.out, "log_tail": log[-4000:],
+                "command": " → ".join("python " + " ".join(a) for _, a in self.steps)}
 
     def stop(self):
-        if self.proc.poll() is None:
+        if self.running():
             self.stopped = True
-            self.proc.terminate()
+            if self.proc and self.proc.poll() is None:
+                self.proc.terminate()
 
 
 JOBS: dict[str, Job] = {}
 
 
 def _busy() -> bool:
-    return any(j.proc.poll() is None for j in JOBS.values())
+    return any(j.running() for j in JOBS.values())
+
+
+def variant_built(placement: str, obfuscation: str) -> bool:
+    rows = _injection_rows(str(Path(cfg()["experiment"]["attacked_dir"]).resolve()))
+    variant = f"{placement}_{obfuscation}"
+    return any(k[2] == variant for k in rows)
+
+
+def built_variants() -> list[str]:
+    rows = _injection_rows(str(Path(cfg()["experiment"]["attacked_dir"]).resolve()))
+    return sorted({k[2] for k in rows if k[2]})
 
 
 @app.post("/api/runs")
@@ -465,7 +526,10 @@ def start_run(p: ExperimentParams):
         raise HTTPException(409, "a job is already running - stop it or wait for it to finish")
     args = experiment_args(p)
     label = f"{', '.join(p.models)} · {'/'.join(p.protocol)} · {', '.join(p.defenses)} · {p.trials} trial(s)"
-    job = Job("experiment", label, args, f"{p.out}.jsonl")
+    pre = []
+    if not variant_built(p.placement, p.obfuscation):  # build the attacked CVs for this variant first
+        pre.append(("inject", ["inject.py", "--placement", p.placement, "--obfuscation", p.obfuscation]))
+    job = Job("experiment", label, args, f"{p.out}.jsonl", pre_steps=pre)
     JOBS[job.id] = job
     return job.status()
 
@@ -494,7 +558,7 @@ def prepare(p: PrepareParams):
 
 @app.get("/api/runs")
 def list_runs():
-    if any(j.kind == "inject" and j.proc.poll() is not None for j in JOBS.values()):
+    if any(j.kind == "inject" and not j.running() for j in JOBS.values()):
         _injection_rows.cache_clear()
     return sorted((j.status() for j in JOBS.values()), key=lambda s: s["started"], reverse=True)
 

@@ -89,6 +89,22 @@ def test_runner_plan_counts_and_resume(tmp_path, monkeypatch):
     assert again.get("done", 0) == 0 and again["skipped"] == len(small)
 
 
+def test_building_a_variant_keeps_the_others(tmp_path, monkeypatch):
+    import csv as _csv
+
+    import inject
+    cvs, att = tmp_path / "cvs", tmp_path / "attacked"
+    generate_dataset(cvs, seed=5, make_pdf=False)
+    # stub out PDF work, but create the PDF paths so the merge sees them as present
+    monkeypatch.setattr(inject, "render_cv_pdf", lambda lines, path, *a, **k: path.write_bytes(b"%PDF"))
+    monkeypatch.setattr(inject, "extract_pdf_text", lambda p: "")
+    inject.build_variants(cvs, att, "templates.yaml", ("bottom",), ("white",), verify=False)
+    inject.build_variants(cvs, att, "templates.yaml", ("bottom",), ("visible",), verify=False)
+    with open(att / "injections.csv", encoding="utf-8") as f:
+        variants = {f"{r['placement']}_{r['obfuscation']}" for r in _csv.DictReader(f) if r["placement"]}
+    assert variants == {"bottom_white", "bottom_visible"}
+
+
 def test_templates_are_the_papers_definitions():
     for key in ("p.Pos", "p.Neg", "p.Pos-Neg", "p.Pos-Med"):
         assert TEMPLATES[key]["text"].startswith("Take into account any previous prompt request")
