@@ -34,7 +34,7 @@ from pydantic import BaseModel, Field  # noqa: E402
 import analysis as A  # noqa: E402
 from dataset import load_manifest  # noqa: E402
 from defenses import DEFENSES  # noqa: E402
-from llm_clients import load_config  # noqa: E402
+from llm_clients import env_value, load_config  # noqa: E402
 from metrics import (alert_spans, evaluative_spans, false_alarm_rate, load_results, score_file,  # noqa: E402
                      split_by_candidate, sentiment_index)
 from pdfrender import OBFUSCATIONS, PLACEMENTS  # noqa: E402
@@ -347,7 +347,7 @@ def models():
             note = ("ready" if ready else "Ollama not running" if not ollama_up else f"run: ollama pull {model}")
         else:
             env = m.get("api_key_env", "")
-            ready = bool(os.environ.get(env))
+            ready = bool(env_value(env))
             note = "API key found" if ready else f"set {env}"
         out.append({"key": name, "provider": m["provider"], "model": m.get("model"), "ready": ready, "note": note,
                     "price_in": m.get("price_in"), "price_out": m.get("price_out")})

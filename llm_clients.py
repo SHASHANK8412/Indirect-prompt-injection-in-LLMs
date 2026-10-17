@@ -98,10 +98,35 @@ class LLMClient:
         return r.json()
 
 
+def env_value(var: str) -> str | None:
+    """An environment variable, falling back to the Windows user/system settings.
+
+    `setx NAME value` only reaches programs started afterwards; reading the registry here means a
+    key set while the app (or a terminal) is already running is picked up without a restart.
+    """
+    val = os.environ.get(var)
+    if val or os.name != "nt":
+        return val
+    try:
+        import winreg
+        for root, path in ((winreg.HKEY_CURRENT_USER, r"Environment"),
+                           (winreg.HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Control\Session Manager\Environment")):
+            try:
+                with winreg.OpenKey(root, path) as k:
+                    v, _ = winreg.QueryValueEx(k, var)
+                    if v:
+                        return str(v)
+            except OSError:
+                continue
+    except ImportError:
+        pass
+    return None
+
+
 def _env_key(var: str | None) -> str:
     if not var:
         raise LLMError("api_key_env not set in config")
-    key = os.environ.get(var)
+    key = env_value(var)
     if not key:
         raise LLMError(f"environment variable {var} is not set")
     return key
