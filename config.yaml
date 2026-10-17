@@ -107,13 +107,24 @@ models:
     rpm: 30
     price_in: null
     price_out: null
-  groq:                     # not in the paper: Groq's free-tier API (fast hosted open models)
+  # Not in the paper: Groq's free-tier API (fast hosted open-weight models, 131k context, so the
+  # 27-CV multi-document sessions fit). Model list checked 2026-10-17.
+  groq:                     # OpenAI's open-weight model: the nearest relative of the paper's ChatGPT
     provider: openai        # Groq's API is OpenAI-compatible
     base_url: https://api.groq.com/openai/v1
-    model: llama-3.3-70b-versatile   # check Groq's model list if this returns "model not found"
+    model: openai/gpt-oss-120b
     api_key_env: GROQ_API_KEY
     send_seed: false
-    rpm: 25                 # stay under the free tier's per-minute limit
+    rpm: 3                  # free tier allows 8,000 tokens/min: ~3 CV prompts per minute
+    price_in: null
+    price_out: null
+  groq_qwen:
+    provider: openai
+    base_url: https://api.groq.com/openai/v1
+    model: qwen/qwen3.8-27b
+    api_key_env: GROQ_API_KEY
+    send_seed: false
+    rpm: 3
     price_in: null
     price_out: null
   copilot:                  # paper: Microsoft Copilot (GPT-4). STAND-IN, NOT COPILOT ITSELF:
