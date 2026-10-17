@@ -107,6 +107,15 @@ models:
     rpm: 30
     price_in: null
     price_out: null
+  groq:                     # not in the paper: Groq's free-tier API (fast hosted open models)
+    provider: openai        # Groq's API is OpenAI-compatible
+    base_url: https://api.groq.com/openai/v1
+    model: llama-3.3-70b-versatile   # check Groq's model list if this returns "model not found"
+    api_key_env: GROQ_API_KEY
+    send_seed: false
+    rpm: 25                 # stay under the free tier's per-minute limit
+    price_in: null
+    price_out: null
   copilot:                  # paper: Microsoft Copilot (GPT-4). STAND-IN, NOT COPILOT ITSELF:
     provider: openai        # Copilot has no public chat API, so this calls OpenAI's GPT-4,
     model: gpt-4            # the model the paper reports Copilot ran on. Report it as a proxy.
