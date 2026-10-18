@@ -83,7 +83,9 @@ class LLMClient:
                     raise LLMError(f"{self.name}: HTTP {code}: {body}") from e
                 last = e
                 retry_after = e.response.headers.get("retry-after") if e.response is not None else None
-                delay = float(retry_after) if retry_after and retry_after.isdigit() else min(60, 2 ** attempt)
+                # honour retry-after, but never stall a run for long on one call (the trial is retried later)
+                delay = min(float(retry_after), 120) if retry_after and retry_after.replace(".", "", 1).isdigit() \
+                    else min(60, 2 ** attempt)
             except (requests.ConnectionError, requests.Timeout) as e:
                 last, delay = e, min(60, 2 ** attempt)
             time.sleep(delay + random.random())

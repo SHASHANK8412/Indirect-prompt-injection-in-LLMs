@@ -249,14 +249,20 @@ def execute(plan, clients, out_path: Path, temperature: float, seed: int, worker
                 print(f"  {n}/{len(todo)}  errors={stats['errors']}  "
                       f"eta={(len(todo) - n) / max(rate, 1e-9) / 60:.1f} min", flush=True)
 
-    # models run in parallel; within a model, `workers` threads share its rate limiter
+    # Models run in parallel, each with its own pool of `workers` threads (sharing that model's rate
+    # limiter). Separate pools matter: with one shared pool, every thread took the first model's
+    # trials and the other models never started.
     by_model = defaultdict(list)
     for t in todo:
         by_model[t.model].append(t)
-    with ThreadPoolExecutor(max_workers=max(1, workers) * max(1, len(by_model))) as ex:
-        futures = [ex.submit(work, t) for ts in by_model.values() for t in ts]
+    pools = {m: ThreadPoolExecutor(max_workers=max(1, workers)) for m in by_model}
+    try:
+        futures = [pools[m].submit(work, t) for m, ts in by_model.items() for t in ts]
         for _ in as_completed(futures):
             pass
+    finally:
+        for p in pools.values():
+            p.shutdown(wait=True)
     return dict(stats)
 
 

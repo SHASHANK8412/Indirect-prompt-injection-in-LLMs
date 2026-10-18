@@ -89,6 +89,38 @@ def test_runner_plan_counts_and_resume(tmp_path, monkeypatch):
     assert again.get("done", 0) == 0 and again["skipped"] == len(small)
 
 
+def test_models_progress_in_parallel(tmp_path):
+    """Each model gets its own workers: a slow first model must not starve the second."""
+    import threading
+    import time
+
+    import runner
+    from llm_clients import LLMResponse
+
+    class Slow:
+        provider, model = "test", "slow"
+
+        def __init__(self, name, delay):
+            self.name, self.delay = name, delay
+
+        def complete(self, messages, temperature=0.0, seed=None, max_tokens=2048):
+            time.sleep(self.delay)
+            return LLMResponse("Una Hollis is adequate.", input_tokens=1, output_tokens=1)
+
+    docs = [Document("CV01", "Una Hollis", "Una Hollis\ntext", None, False)]
+    plan = [runner.Trial(m, "single", "CV01", ["CV01"], "CV01", "plain", "none", t, docs)
+            for m in ("a", "b") for t in range(6)]
+    out = tmp_path / "r.jsonl"
+    seen_b = threading.Event()
+    clients = {"a": Slow("a", 0.3), "b": Slow("b", 0.0)}
+    t0 = time.time()
+    runner.execute(plan, clients, out, 0.0, 1, workers=1, progress=False)
+    models_in_order = [json.loads(l)["model"] for l in out.read_text(encoding="utf-8").splitlines()]
+    # model b (fast) must finish its trials early, not after all of a's
+    assert models_in_order.index("b") < 3
+    assert sorted(models_in_order) == ["a"] * 6 + ["b"] * 6
+
+
 def test_building_a_variant_keeps_the_others(tmp_path, monkeypatch):
     import csv as _csv
 
